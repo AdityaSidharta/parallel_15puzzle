@@ -21,6 +21,7 @@ description:         Please see the README on GitHub at <https://github.com/alex
 
 dependencies:
 - base >= 4.7 && < 5
+- PSQueue
 
 library:
   source-dirs: src
@@ -35,6 +36,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - 15puzzle
+    - PSQueue
 
 tests:
   15puzzle-test:
@@ -46,3 +48,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - 15puzzle
+    - PSQueue
