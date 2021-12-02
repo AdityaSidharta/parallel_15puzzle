@@ -22,6 +22,8 @@ description:         Please see the README on GitHub at <https://github.com/alex
 dependencies:
 - base >= 4.7 && < 5
 - PSQueue
+- tasty
+- tasty-hunit
 
 library:
   source-dirs: src
@@ -38,6 +40,16 @@ executables:
     - 15puzzle
     - PSQueue
 
+  # 15puzzle-generate:
+  #   main:                FileGen.hs
+  #   source-dirs:         app
+  #   ghc-options:
+  #   - -threaded
+  #   - -rtsopts
+  #   - -with-rtsopts=-N
+  #   dependencies:
+  #   - 15puzzle
+
 tests:
   15puzzle-test:
     main:                Spec.hs
@@ -49,3 +61,5 @@ tests:
     dependencies:
     - 15puzzle
     - PSQueue
+    - tasty
+    - tasty-hunit

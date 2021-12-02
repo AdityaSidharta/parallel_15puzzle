@@ -1,7 +1,8 @@
 module Lib
     (   PuzzleState (..),
         parseK,
-        solveKpuzzle
+        solveKpuzzle,
+        getStateVector
     ) where
 import System.IO (hGetLine, Handle)
 import Data.PSQueue (PSQ)
@@ -37,7 +38,6 @@ solveKpuzzle handle k = do
 
 solve :: [Int] -> Int -> IO ()
 solve myinput n = do
-    -- do solving here
     print myinput
 
 

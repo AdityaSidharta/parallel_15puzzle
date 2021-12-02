@@ -33,6 +33,8 @@ library
   build-depends:
       PSQueue
     , base >=4.7 && <5
+    , tasty
+    , tasty-hunit
   default-language: Haskell2010
 
 executable 15puzzle-exe
@@ -46,6 +48,8 @@ executable 15puzzle-exe
       15puzzle
     , PSQueue
     , base >=4.7 && <5
+    , tasty
+    , tasty-hunit
   default-language: Haskell2010
 
 test-suite 15puzzle-test
@@ -60,4 +64,6 @@ test-suite 15puzzle-test
       15puzzle
     , PSQueue
     , base >=4.7 && <5
+    , tasty
+    , tasty-hunit
   default-language: Haskell2010
