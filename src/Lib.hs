@@ -37,8 +37,9 @@ solveKpuzzle handle k = do
 
 
 solve :: [Int] -> Int -> IO ()
-solve myinput n = do
-    print myinput
+solve array n = do
+    print array
+    print "hello"
 
 
 

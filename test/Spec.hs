@@ -1,25 +1,25 @@
-import Test.Tasty
-import Test.Tasty.HUnit
+import Test.Tasty ( defaultMain, testGroup, TestTree )
+import Test.Tasty.HUnit ( testCase, assertEqual, Assertion, (@?=) )
 
 import Lib (getStateVector, parseK, solveKpuzzle)
 import System.IO (openFile, IOMode (ReadMode))
 
 main :: IO ()
 main = do
-  defaultMain (testGroup "Library Test" [getStateVectorTest])
+  defaultMain (testCase "getStateVectorTest" getStateVectorTest)
 
-fn2 x = do put
-
-fn :: FilePath -> IO [[Int]]
-fn filename = do 
+fn :: FilePath -> IO [Int]
+fn filename = do
                 handle <- openFile filename ReadMode
-                matrix <- do
+                do
+                    k <- parseK handle
                     n <- parseK handle
+                    print n
                     matrix <- getStateVector handle n n
-                    return matrix
-                return matrix
+                    let array = concat matrix
+                    return array
 
-getStateVectorTest :: TestTree
-getStateVectorTest = testCase "Testing sayYo"
-  (assertEqual [[1,2,3,4]] (fn "test.txt"))
-  where 
+getStateVectorTest :: Assertion
+getStateVectorTest = do
+  x <- fn "test/test.txt"
+  x @?= [1,3,0,2]
