@@ -24,6 +24,7 @@ dependencies:
 - PSQueue
 - tasty
 - tasty-hunit
+- random-fu
 
 library:
   source-dirs: src
@@ -40,15 +41,16 @@ executables:
     - 15puzzle
     - PSQueue
 
-  # 15puzzle-generate:
-  #   main:                FileGen.hs
-  #   source-dirs:         app
-  #   ghc-options:
-  #   - -threaded
-  #   - -rtsopts
-  #   - -with-rtsopts=-N
-  #   dependencies:
-  #   - 15puzzle
+  15puzzle-generate:
+    main:                GenFile.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - 15puzzle
+    - random-fu
 
 tests:
   15puzzle-test:
@@ -63,3 +65,4 @@ tests:
     - PSQueue
     - tasty
     - tasty-hunit
+    - random-fu

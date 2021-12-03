@@ -33,6 +33,7 @@ library
   build-depends:
       PSQueue
     , base >=4.7 && <5
+    , random-fu
     , tasty
     , tasty-hunit
   default-language: Haskell2010
@@ -40,6 +41,7 @@ library
 executable 15puzzle-exe
   main-is: Main.hs
   other-modules:
+      GenFile
       Paths_15puzzle
   hs-source-dirs:
       app
@@ -48,6 +50,24 @@ executable 15puzzle-exe
       15puzzle
     , PSQueue
     , base >=4.7 && <5
+    , random-fu
+    , tasty
+    , tasty-hunit
+  default-language: Haskell2010
+
+executable 15puzzle-generate
+  main-is: GenFile.hs
+  other-modules:
+      Main
+      Paths_15puzzle
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      15puzzle
+    , PSQueue
+    , base >=4.7 && <5
+    , random-fu
     , tasty
     , tasty-hunit
   default-language: Haskell2010
@@ -64,6 +84,7 @@ test-suite 15puzzle-test
       15puzzle
     , PSQueue
     , base >=4.7 && <5
+    , random-fu
     , tasty
     , tasty-hunit
   default-language: Haskell2010
