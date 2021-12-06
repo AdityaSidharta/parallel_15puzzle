@@ -4,9 +4,14 @@ module Lib
         solveKpuzzle
     ) where
 import System.IO (hGetLine, Handle)
-import Data.PSQueue (PSQ)
+import Data.PSQueue (PSQ, singleton, size, findMin, deleteMin, key)
+import Data.Maybe (fromJust)
+import Data.HashMap.Strict (HashMap)
 
-data PuzzleState = PuzzleState Int Int [Int] deriving (Show, Eq)
+-- Puzzle State fn gn [status vector]
+data PuzzleState = PuzzleState {fn::Int, 
+                                gn::Int,
+                                state::[Int]} deriving (Show, Eq)
 
 instance Ord PuzzleState where
     PuzzleState a b _ `compare` PuzzleState c d _ = (a+b) `compare` (c+d) 
@@ -26,19 +31,39 @@ getStateVector handle n cur = do
 
 
 solveKpuzzle :: (Num t, Eq t) => Handle -> t -> IO ()
-solveKpuzzle handle 0 = return ()
+solveKpuzzle handle 0 = do
+    return ()
 solveKpuzzle handle k = do
     n <- parseK handle
     matrix <- getStateVector handle n n
-    let array = concat matrix
-    solve array n
+    let array  = concat matrix
+        target = [0..(n*n-1)]
+        gn     = costg array target n
+        psq    = singleton (PuzzleState 0 gn array) gn
+        -- mp     = singleton array 0 -- a hashmap storing visited states -> fn
+        step   = fromJust $ solve psq target n
+    print step
     solveKpuzzle handle (k-1)
 
+costg :: Integral a => [a] -> [a] -> a -> a
+costg cur target n = sum $ fmap diff (zip cur target)
+    where diff (x,y) = abs (x `mod` n - y `mod` n) + abs (x `div` n - y `div` n)
 
-solve :: [Int] -> Int -> IO ()
-solve myinput n = do
-    -- do solving here
-    print myinput
+
+solve :: Ord p1 => PSQ PuzzleState p1 -> [Int] -> p2 -> Maybe Int
+solve psq target n = do
+    top <- findMin psq
+    let npsq = deleteMin psq
+        depth = fn $ key top
+        curarray = state $ key top 
+    if curarray == target then
+        return depth
+    else do
+        -- get neighbors from top
+        -- check if they are in the hashmap
+        -- if so, compare mp[state] = fn and current fn
+        -- if not, push them to psq and hashmap
+        return 0
 
 
 
