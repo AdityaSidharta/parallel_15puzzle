@@ -16,4 +16,4 @@ main = do
         _ -> do
             pn <- getProgName
             error $ "Usage: "++pn++" <filename>"
-    -- error "fininsh this part"
+    -- error "finish this part"
