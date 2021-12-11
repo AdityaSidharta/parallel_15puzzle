@@ -2,37 +2,37 @@ module GenFile where
 import System.Environment (getProgName, getArgs)
 import Control.Monad ( forM )
 import GHC.IOArray (IOArray)
+import Data.List (sortOn, intercalate)
+import System.Random (mkStdGen)
+import System.Random.Shuffle (shuffle')
 
-sortsnd = map swap . ssort . map swap 
-
-shuffle xs = do
-    g <- getStdGen
-    let ys = take 10 (randoms g :: [Double])
-    let sortedxs = sortsnd zip (xs ys)
-    return sortedxs
-
+generate :: (Num a, Enum a) => Int -> a -> [[a]]
 generate 0 _ = []
-generate k n = shuffle([0..(n * n - 1)]) ++ (generate (k -1 ) n)
+generate k n = let xs = [0..(n * n - 1)] in shuffle' xs (length xs) (mkStdGen k) : generate (k -1) n
 
-formatArray 0 _ = ""
-formatArray a n = intercalate " " (fst(splitAt n a)) : (formatArray (snd(splitAt n a)) n)
+formatArray :: [Int] -> Int -> String
+formatArray [] n = ""
+formatArray a n = unwords (map show (take n a)) ++ "\n" ++ formatArray (drop n a) n
 
+formatArrays :: [[Int]] -> String
 formatArrays [] = ""
-formatArrays (a:as) = "n/n" + (formatArray a n) + "/n" + (formatArrays as)
-    where 
-        n = (floor(sqrt(fromIntegral(length a)))) 
+formatArrays (a:as) = show n ++ "\n" ++ formatArray a n ++ formatArrays as
+    where
+        n = floor(sqrt(fromIntegral(length a))) :: Int
 
-writeArrays arrays filename = do 
-    writeFile filename (formatArrays arrays)
+writeArrays :: [[Int]] -> FilePath -> IO ()
+writeArrays arrays filename =
+    writeFile filename (show n ++ "\n" ++ formatArrays arrays)
+      where
+        n = length arrays
 
 main :: IO ()
 main = do
     args <- getArgs
     case args of
         [k, n, filename] -> do
-            let arrays = generate k n
-            print "Hello"
-            -- writeArrays arrays filename
+            let arrays = generate (read k) (read n)
+            writeArrays arrays filename
         _ -> do
             pn <- getProgName
             error $ "Usage: "++pn++" <filename>"

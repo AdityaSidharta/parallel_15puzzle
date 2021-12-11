@@ -24,7 +24,8 @@ dependencies:
 - PSQueue
 - tasty
 - tasty-hunit
-- random-fu
+- random-shuffle
+- random
 
 library:
   source-dirs: src
@@ -50,7 +51,8 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - 15puzzle
-    - random-fu
+    - random-shuffle
+    - random
 
 tests:
   15puzzle-test:
@@ -65,4 +67,5 @@ tests:
     - PSQueue
     - tasty
     - tasty-hunit
-    - random-fu
+    - random-shuffle
+    - random
