@@ -22,14 +22,11 @@ description:         Please see the README on GitHub at <https://github.com/alex
 dependencies:
 - base >= 4.7 && < 5
 - PSQueue
-<<<<<<< HEAD
 - tasty
 - tasty-hunit
 - random-shuffle
 - random
-=======
 - unordered-containers
->>>>>>> f6a8ce14543e0597f29da1cfb53bd764cbc07caa
 
 library:
   source-dirs: src
