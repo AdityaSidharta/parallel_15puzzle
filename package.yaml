@@ -23,6 +23,7 @@ dependencies:
 - base >= 4.7 && < 5
 - PSQueue
 - unordered-containers
+- repa
 
 library:
   source-dirs: src
@@ -39,6 +40,7 @@ executables:
     - 15puzzle
     - PSQueue
     - unordered-containers
+    - repa
 
 tests:
   15puzzle-test:
@@ -52,3 +54,4 @@ tests:
     - 15puzzle
     - PSQueue
     - unordered-containers
+    - repa

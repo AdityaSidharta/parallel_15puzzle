@@ -11,6 +11,13 @@ packages:
       sha256: 20f22262b113ba31601dcdd2c29315f70365ab298f1ddb3a6fb2c6d8cfb07b2a
   original:
     hackage: PSQueue-1.1.0.1
+- completed:
+    hackage: repa-3.4.1.4@sha256:df02acc0f65be7ff67cf71058841644425337c5ebd44c95b1ac1564a1e3c4858,3323
+    pantry-tree:
+      size: 2965
+      sha256: 2addb474c6f496d26c4335ca4c6a333c746d7f90957d13182c13a1483c6db7e7
+  original:
+    hackage: repa-3.4.1.4
 snapshots:
 - completed:
     size: 586292
