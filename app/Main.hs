@@ -1,6 +1,6 @@
 module Main where
 
-import Lib (parseK, solveKpuzzle)
+import Lib (readInt, solveKpuzzle)
 import System.Exit(die)
 import System.Environment(getArgs, getProgName)
 import System.IO(readFile, openFile, IOMode(ReadMode))
@@ -11,9 +11,8 @@ main = do
     case args of
         [filename] -> do
             handle <- openFile filename ReadMode
-            k <- parseK handle
+            k <- readInt handle
             solveKpuzzle handle k
         _ -> do
             pn <- getProgName
             error $ "Usage: "++pn++" <filename>"
-    -- error "finish this part"

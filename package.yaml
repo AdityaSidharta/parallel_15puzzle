@@ -27,6 +27,7 @@ dependencies:
 - random-shuffle
 - random
 - unordered-containers
+- repa
 
 library:
   source-dirs: src
@@ -43,6 +44,7 @@ executables:
     - 15puzzle
     - PSQueue
     - unordered-containers
+    - repa
 
   15puzzle-generate:
     main:                GenFile.hs
@@ -72,3 +74,4 @@ tests:
     - random-shuffle
     - random
     - unordered-containers
+    - repa
