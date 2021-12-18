@@ -2,7 +2,8 @@
 module Lib
     (   PuzzleState (..),
         readInt,
-        solveKpuzzle
+        solveKpuzzle,
+        getStateVector
     ) where
 import System.IO (hGetLine, Handle)
 import Data.PSQueue as PQ (PSQ, singleton, size, findMin, deleteMin, key, insert)
