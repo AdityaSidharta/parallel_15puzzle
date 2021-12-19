@@ -68,7 +68,7 @@ executable 15puzzle-generate
       Paths_15puzzle
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -main-is GenFile
   build-depends:
       15puzzle
     , PSQueue
@@ -83,7 +83,7 @@ executable 15puzzle-generate
 
 test-suite 15puzzle-test
   type: exitcode-stdio-1.0
-  main-is: Spec.hs
+  main-is: Test.hs
   other-modules:
       Paths_15puzzle
   hs-source-dirs:

@@ -1,10 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
-module Lib
-    (   PuzzleState (..),
-        readInt,
-        solveKpuzzle,
-        getStateVector
-    ) where
+module Lib where
 import System.IO (hGetLine, Handle)
 import Data.PSQueue as PQ (PSQ, singleton, size, findMin, deleteMin, key, insert)
 import Data.Maybe (fromJust)
@@ -28,7 +23,6 @@ instance Ord PuzzleState where
     PuzzleState a b _ _ `compare` PuzzleState c d _ _ = (a+b) `compare` (c+d)
 
 -- | generateArrays returns k number of shuffled matrix of size n for the input of 15-puzzle problem
-
 generateArrays :: (Num a, Enum a) => Int -> a -> [[a]]
 generateArrays 0 _ = []
 generateArrays k n = let xs = [0..(n * n - 1)] in shuffle' xs (length xs) (mkStdGen k) : generateArrays (k -1) n
@@ -170,16 +164,20 @@ hash :: Integral a => Array U DIM1 Int -> Int -> a
 hash l idx | (Z:.idx) == R.extent l = 0
              | otherwise = fromIntegral (l!(Z:.idx)) + 100 * hash l (idx+1)
 
--- | numinv check the number of inversions in the board (pstate)
-numinv:: Array U DIM1 Int -> Int
-numinv pstate = 0 -- TODO: finish this part
+-- | numinv check the number of inversions in the board (arr)
+numinv :: Array U DIM1 Int -> Int
+numinv arr = aux arr 0 1 0
+    where aux arr i j r | i == R.size (R.extent arr) = r
+                        | j == R.size (R.extent arr) = aux arr (i+1) (i+2) r
+                        | arr!(Z:.i) < arr!(Z:.j) = aux arr i (j+1) r
+                        | arr!(Z:.i) > arr!(Z:.j) = aux arr i (j+1) (r+1)
 
--- | solvability checks whether the given board (pstate) with the current zero position (zeropos) is solvable 8-puzzle problem
+-- | solvability checks whether the given board (arr) with the current zero position (zeropos) is solvable 8-puzzle problem
 solvability:: Array U DIM1 Int -> Int -> Int -> Bool
-solvability pstate zeropos n | odd  n && even (numinv pstate) = True
-                             | even n && even (n - (zeropos `mod` n)) && even (numinv pstate) = True
-                             | even n && odd  (n - (zeropos `mod` n)) && odd  (numinv pstate) = True
-                             | otherwise  = False
+solvability arr zeropos n | odd n && even (numinv arr) = True
+                          | even n && even (n - (zeropos `mod` n)) && even (numinv arr) = True
+                          | even n && odd  (n - (zeropos `mod` n)) && odd  (numinv arr) = True
+                          | otherwise  = False
 
 -- | solveKpuzzle perform solving on multiple 8-puzzles using A* algorithm
 solveKpuzzle :: Handle -> Int -> IO ()
@@ -224,3 +222,4 @@ solve psq target n mp = do
         -- print curarray
         -- printList validNeighborList
         solve newpsq target n newmap
+

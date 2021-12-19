@@ -7,16 +7,6 @@ tile is numbered from 1 to (N 2−1), leaving a single square tile empty. Tiles 
 adjacent to the empty tile can be moved by sliding them horizontally, or vertically. The goal
 of the puzzle is to place the tiles in numerical order, leaving the last tile to be located at the
 bottom right corner of the frame.
-It should be noted that not all of the initial state of 15 puzzle is solvable. 15 puzzle is
-solvable if:
-1. N is odd
-2. N is even, and the blank tile is on the even / odd row (counting from the bottom row),
-and the number of inversions is odd / even
-
-Inversion is defined as the number of pairs (a, b), where a > b, but a appears before b if
-we were to flatten the number arrays into a single row. For example, [2 1 3 5 4 6 7 8] has 2
-inversions (2, 1), (5, 4).
-
 
 ## Algorithm
 For the 15 puzzle problem, we adapted the A∗algorithm to help us minimize the effort to
@@ -42,11 +32,22 @@ this will more likely create a massive overhead. Thus, a more effective solution
 parallelization by creating multiple sparks on expansion on the openSet, the list of potential
 path candidates that has f (n) calculated from the starting node at least once.
 
-## Benchmark Comparison
-In order to measure the effectiveness of our parallel algorithm, we will compare the running
-time of sequential implementation of the A* algorithm against our implementation of the
-parallel A∗algorithm for the 15 puzzle. In order for the running time difference to be
-tangible, it is required to solve a larger puzzle, i.e N > 4. Therefore, in our benchmark
-comparison, we will solve K puzzles with size (N ×N ), assuming that we have C number of
-cores. K, N, and C will be different parameters that we will inspect, in order to analyze the
-trend performance improvement as the number of cores or the problem complexity increases
+## Installation
+```
+stack build
+```
+
+## Testing
+```
+stack test
+```
+
+## Running the Script
+
+<!-- TODO : Complete this -->
+
+## Docs Generation
+```
+stack exec -- haddock --html src/Lib.hs app/Main.hs app/GenFile.hs --hyperlinked-source --odir=docs
+```
+

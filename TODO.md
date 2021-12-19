@@ -1,8 +1,8 @@
 # TODO
 
-- [] Finish the solvability function
+- [x] Finish the solvability function
+- [x] Testing helper Functions
+- [x] Documentation
 - [] Parallel algorithm implementation (Naive)
 - [] Parallel algorithm implementation (Smart)
-- [] Testing helper Functions
-- [] Documentation
 - [] Project Report
