@@ -34,6 +34,7 @@ packages:
 extra-deps:
 - PSQueue-1.1.0.1
 - repa-3.4.1.4
+- concurrent-hashtable-0.1.8
 # Dependency packages to be pulled from upstream that are not in the resolver.
 # These entries can reference officially published versions as well as
 # forks / in-progress versions pinned to a git hash. For example:

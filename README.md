@@ -34,6 +34,7 @@ path candidates that has f (n) calculated from the starting node at least once.
 
 ## Installation
 ```
+stack install
 stack build
 ```
 
@@ -43,11 +44,11 @@ stack test
 ```
 
 ## Running the Script
-
-<!-- TODO : Complete this -->
+```
+stack exec 15puzzle-exe "input.txt"
+```
 
 ## Docs Generation
 ```
 stack exec -- haddock --html src/Lib.hs app/Main.hs app/GenFile.hs --hyperlinked-source --odir=docs
 ```
-

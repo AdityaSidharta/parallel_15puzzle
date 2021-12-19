@@ -33,6 +33,7 @@ library
   build-depends:
       PSQueue
     , base >=4.7 && <5
+    , concurrent-hashtable
     , random
     , random-shuffle
     , repa
@@ -53,6 +54,7 @@ executable 15puzzle-exe
       15puzzle
     , PSQueue
     , base >=4.7 && <5
+    , concurrent-hashtable
     , random
     , random-shuffle
     , repa
@@ -73,6 +75,7 @@ executable 15puzzle-generate
       15puzzle
     , PSQueue
     , base >=4.7 && <5
+    , concurrent-hashtable
     , random
     , random-shuffle
     , repa
@@ -93,6 +96,7 @@ test-suite 15puzzle-test
       15puzzle
     , PSQueue
     , base >=4.7 && <5
+    , concurrent-hashtable
     , random
     , random-shuffle
     , repa
