@@ -171,6 +171,7 @@ numinv arr = aux arr 0 1 0
                         | j == R.size (R.extent arr) = aux arr (i+1) (i+2) r
                         | arr!(Z:.i) < arr!(Z:.j) = aux arr i (j+1) r
                         | arr!(Z:.i) > arr!(Z:.j) = aux arr i (j+1) (r+1)
+                        | otherwise = error "i cannot be equal to j"
 
 -- | solvability checks whether the given board (arr) with the current zero position (zeropos) is solvable 8-puzzle problem
 solvability:: Array U DIM1 Int -> Int -> Int -> Bool
