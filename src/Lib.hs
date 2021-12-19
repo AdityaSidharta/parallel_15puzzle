@@ -20,7 +20,7 @@ data PuzzleState = PuzzleState {fn::Int,
 
 cmpUboxarray:: Array U DIM1 Int -> Array U DIM1 Int -> Ordering
 cmpUboxarray a1 a2 = cmp a1 a2 0
-    where cmp a1 a2 idx | idx ==  R.size (R.extent a1) = GT 
+    where cmp a1 a2 idx | idx ==  R.size (R.extent a1) = GT
                         | a1!(Z :. idx) == a2!(Z :. idx) = cmp a1 a2 (idx+1)
                         | otherwise = compare (a1!(Z :. idx)) (a2!(Z :. idx))
 
@@ -213,22 +213,21 @@ solve psq target n mp = do
         depth     = fn $ key top
         curarray  = state $ key top
 
-    if PQ.size psq == 0 then
-        return (-1)
-    else if curarray == target then
-        return depth
-    else do
-        -- get neighbors from top
-        -- check if they are in the hashmap
-        -- if so, compare mp[state] = fn and current fn
-        -- if not, push them to psq and hashmap
-        let neighborList = getAllNeighbor (key top) n
-            validNeighborList = getValidNeighbor neighborList mp
-            newmap = addMap validNeighborList mp
-            newpsq = addPSQ validNeighborList npsq
-        --print curarray
-        --printList validNeighborList
-        --print $ PQ.toList newpsq
-        --print $ PQ.size newpsq
-        solve newpsq target n newmap
+    if not (solvability curarray (getZeroPos curarray 0) n) || (PQ.size psq == 0) then
+        return (-1) else (if curarray == target then
+                         return depth
+                     else do
+                         -- get neighbors from top
+                         -- check if they are in the hashmap
+                         -- if so, compare mp[state] = fn and current fn
+                         -- if not, push them to psq and hashmap
+                         let neighborList = getAllNeighbor (key top) n
+                             validNeighborList = getValidNeighbor neighborList mp
+                             newmap = addMap validNeighborList mp
+                             newpsq = addPSQ validNeighborList npsq
+                         --print curarray
+                         --printList validNeighborList
+                         --print $ PQ.toList newpsq
+                         --print $ PQ.size newpsq
+                         solve newpsq target n newmap)
 
