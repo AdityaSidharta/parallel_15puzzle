@@ -18,9 +18,15 @@ data PuzzleState = PuzzleState {fn::Int,
                                 zeroPos::Int,
                                 state::Array U DIM1 Int} deriving (Show, Eq)
 
+cmpUboxarray:: Array U DIM1 Int -> Array U DIM1 Int -> Ordering
+cmpUboxarray a1 a2 = cmp a1 a2 0
+    where cmp a1 a2 idx | idx ==  R.size (R.extent a1) = GT 
+                        | a1!(Z :. idx) == a2!(Z :. idx) = cmp a1 a2 (idx+1)
+                        | otherwise = compare (a1!(Z :. idx)) (a2!(Z :. idx))
+
 -- | PuzzleState is ordered by the total incurred cost and distance to goal (fn + gn) 
 instance Ord PuzzleState where
-    PuzzleState a b _ _ `compare` PuzzleState c d _ _ = (a+b) `compare` (c+d)
+    PuzzleState a b _ s1 `compare` PuzzleState c d _ s2 = if (a+b) /= (c+d) then (a+b) `compare` (c+d) else cmpUboxarray s1 s2
 
 -- | generateArrays returns k number of shuffled matrix of size n for the input of 15-puzzle problem
 generateArrays :: (Num a, Enum a) => Int -> a -> [[a]]
@@ -220,9 +226,9 @@ solve psq target n mp = do
             validNeighborList = getValidNeighbor neighborList mp
             newmap = addMap validNeighborList mp
             newpsq = addPSQ validNeighborList npsq
-        print curarray
-        printList validNeighborList
-        print $ PQ.toList newpsq
-        print $ PQ.size newpsq
+        --print curarray
+        --printList validNeighborList
+        --print $ PQ.toList newpsq
+        --print $ PQ.size newpsq
         solve newpsq target n newmap
 
