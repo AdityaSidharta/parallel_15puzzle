@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Lib where
 import System.IO (hGetLine, Handle)
-import Data.PSQueue as PQ (PSQ, singleton, size, findMin, deleteMin, key, insert)
+import Data.PSQueue as PQ (PSQ, singleton, size, findMin, deleteMin, key, insert, toList)
 import Data.Maybe (fromJust)
 import Data.HashMap.Strict as H (HashMap, singleton, member, lookup, insert)
 import Data.Array.Repa as R (Array, U, DIM1, fromListUnboxed, Z (Z), (:.) ((:.)), (!), index, Shape (size), Source (extent), DIM0, zipWith, D, computeUnboxedS )
@@ -152,7 +152,7 @@ addMap :: Foldable t => t PuzzleState -> HashMap [Char] Int -> HashMap [Char] In
 addMap ps mp = foldr (\ p -> H.insert (getHashKey (state p)) (fn p)) mp ps
 
 -- | addPSQ adds all of the given puzzle states (ps) into the PriorityQueue (psq)
-addPSQ :: Foldable t => t PuzzleState -> PSQ PuzzleState Int -> PSQ PuzzleState Int
+addPSQ :: [PuzzleState] -> PSQ PuzzleState Int -> PSQ PuzzleState Int
 addPSQ ps psq = foldr(\ p -> PQ.insert p (fn p + gn p)) psq ps
 
 -- | getHashKey turns the hash result from the given array (li) and return string as the hash key. hash [0, 3, 1, 2] -> "00030102"
@@ -171,6 +171,7 @@ numinv arr = aux arr 0 1 0
                         | j == R.size (R.extent arr) = aux arr (i+1) (i+2) r
                         | arr!(Z:.i) < arr!(Z:.j) = aux arr i (j+1) r
                         | arr!(Z:.i) > arr!(Z:.j) = aux arr i (j+1) (r+1)
+                        | otherwise = -1
 
 -- | solvability checks whether the given board (arr) with the current zero position (zeropos) is solvable 8-puzzle problem
 solvability:: Array U DIM1 Int -> Int -> Int -> Bool
@@ -219,7 +220,9 @@ solve psq target n mp = do
             validNeighborList = getValidNeighbor neighborList mp
             newmap = addMap validNeighborList mp
             newpsq = addPSQ validNeighborList npsq
-        -- print curarray
-        -- printList validNeighborList
+        print curarray
+        printList validNeighborList
+        print $ PQ.toList newpsq
+        print $ PQ.size newpsq
         solve newpsq target n newmap
 
