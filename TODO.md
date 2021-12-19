@@ -1,2 +1,8 @@
-1. Finish the solvability function (number of inversion)
-2. Parallel algorithm implementation
+# TODO
+
+- [x] Finish the solvability function
+- [x] Testing helper Functions
+- [x] Documentation
+- [] Parallel algorithm implementation (Naive)
+- [] Parallel algorithm implementation (Smart)
+- [] Project Report

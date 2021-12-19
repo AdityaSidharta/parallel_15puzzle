@@ -53,6 +53,7 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -main-is GenFile
     dependencies:
     - 15puzzle
     - random-shuffle
@@ -60,7 +61,7 @@ executables:
 
 tests:
   15puzzle-test:
-    main:                Spec.hs
+    main:                Test.hs
     source-dirs:         test
     ghc-options:
     - -threaded
