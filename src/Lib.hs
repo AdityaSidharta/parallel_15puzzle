@@ -29,7 +29,7 @@ cmpUboxarray a1 a2 = cmp a1 a2 0
 
 -- | PuzzleState is ordered by the total incurred cost and distance to goal (fn + gn) 
 instance Ord PuzzleState where
-    PuzzleState a b _ s1 `compare` PuzzleState c d _ s2 = if (a+b) /= (c+d) then (a+b) `compare` (c+d) else cmpUboxarray s1 s2
+    PuzzleState a b _ s1 `compare` PuzzleState c d _ s2 = if a+b /= c+d then (a+b) `compare` (c+d) else cmpUboxarray s1 s2
 
 -- | generateArrays returns k number of shuffled matrix of size n for the input of 15-puzzle problem
 generateArrays :: (Num a, Enum a) => Int -> a -> [[a]]
@@ -59,7 +59,7 @@ writeArrays arrays filename =
 manhattanDist :: Source r Int =>  Array r DIM1 Int -> Int -> Int-> Int
 manhattanDist cur idx n | idx == R.size (R.extent cur) = 0
                         | otherwise = diff idx (cur ! ( Z :. idx)) + manhattanDist cur (idx+1) n
-                        where diff x y = abs (x `mod` n - (y `mod` n)) + abs (x `div` n - (y `div` n))
+                        where diff x y = abs (x `mod` n - y `mod` n) + abs (x `div` n - y `div` n)
 
 -- | hammingDist calculates the number of wrong tiles of the current state (cur) to the goal board with size (n), performing recursion using (idx)
 hammingDist :: Source r Int =>  Array r DIM1 Int -> Int -> Int ->Int
@@ -161,12 +161,12 @@ getValidNeighbor::[PuzzleState] -> H.HashMap String Int-> [PuzzleState]
 getValidNeighbor ps mp = filter (filterInMap mp) ps
 
 -- | filterInMap returns True if the puzzle (puzzle) is not in the HashMap (mp) or if the puzzle can now be reached in less steps (fn)
-filterInMap :: HashMap [Char] Int -> PuzzleState -> Bool
+filterInMap :: HashMap String Int -> PuzzleState -> Bool
 filterInMap mp puzzle = not (H.member key mp) || fromJust (H.lookup key mp) > fn puzzle
     where key = getHashKey $ state puzzle
 
 -- | addMap add all of the puzzle states (ps) into the given HashMap (mp)
-addMap :: Foldable t => t PuzzleState -> HashMap [Char] Int -> HashMap [Char] Int
+addMap :: Foldable t => t PuzzleState -> HashMap String Int -> HashMap String Int
 addMap ps mp = foldr (\ p -> H.insert (getHashKey (state p)) (fn p)) mp ps
 
 -- | addPSQ adds all of the given puzzle states (ps) into the PriorityQueue (psq)
@@ -174,7 +174,7 @@ addPSQ :: [PuzzleState] -> PSQ PuzzleState Int -> PSQ PuzzleState Int
 addPSQ ps psq = foldr(\ p -> PQ.insert p (fn p + gn p)) psq ps
 
 -- | getHashKey turns the hash result from the given array (li) and return string as the hash key. hash [0, 3, 1, 2] -> "00030102"
-getHashKey:: Array U DIM1 Int -> [Char]
+getHashKey:: Array U DIM1 Int -> String
 getHashKey li = show $ hash li 0
 
 -- | hash perform simple hash function on the given array (l), using recursive function on idx. hash [0, 3, 1, 2] -> "00030102"
@@ -209,7 +209,7 @@ getAllPuzzles handle k = do
     return ((n, concat matrix): latter)
 
 solveOne :: (Int, [Int]) -> Int
-solveOne (n, state) | solvable = unsafePerformIO $ solve (psq, target, n, mp) 
+solveOne (n, state) | solvable = unsafePerformIO $ solve (psq, target, n, mp)
                     | otherwise = -1
   where array = fromListUnboxed (Z :. (n*n) :: DIM1) state
         target = fromListUnboxed (Z :. (n*n) :: DIM1) [0..(n*n-1)]
@@ -218,7 +218,7 @@ solveOne (n, state) | solvable = unsafePerformIO $ solve (psq, target, n, mp)
         mp     = H.singleton (getHashKey array) 0 -- a hashmap storing visited states -> fn
         solvable = solvability array (getZeroPos array 0) n
 
-    
+
 parSolveKpuzzle:: Handle -> Int -> IO()
 parSolveKpuzzle handle k = do
     allpuzzles <- getAllPuzzles handle k
@@ -238,8 +238,8 @@ solveKpuzzle handle k = do
         psq    = PQ.singleton (PuzzleState 0 gn (getZeroPos array 0) array) gn
         mp     = H.singleton (getHashKey array) 0 -- a hashmap storing visited states -> fn
         solvable = solvability array (getZeroPos array 0) n
- 
-    step  <- if solvable then (solveParPSQ psq target n mp 3) else return (-1)
+
+    step  <- if solvable then solveParPSQ (psq, target, n, mp, 3) else return (-1)
     -- output step needed to solve the puzzle
     print step
 
@@ -287,7 +287,8 @@ solveParNeighbor psq target n mp = do
         solveParNeighbor newpsq target n newmap
 
 -- | solve perform sequential solving on 8-puzzle using A* algorithm
-solveParPSQ psq target n mp k = do
+solveParPSQ :: (PSQ PuzzleState Int, Array U DIM1 Int, Int, HashMap String Int, Int) -> IO Int
+solveParPSQ (psq, target, n, mp, k) = do
     let top      = fromJust $ findMin psq
         npsq     = deleteMin psq
         depth    = fn $ key top
@@ -303,13 +304,16 @@ solveParPSQ psq target n mp k = do
             validNeighborList = getValidNeighbor neighborList mp
             newmap = addMap validNeighborList mp
             newpsq = addPSQ validNeighborList npsq
-        solveParPSQ newpsq target n newmap k
+        solveParPSQ (newpsq, target, n, newmap, k)
     else do
         let length = PQ.size psq
-            psqs = [PQ.singleton (key x) (prio x) | x <- (PQ.toList psq)]
-            targets = take length (repeat target)
-            ns = take length (repeat n)
-            mps = take length (repeat mp)
-            args = zip4 psqs targets ns mps 
+            psqs = [PQ.singleton (key x) (prio x) | x <- PQ.toList psq]
+            targets = replicate length target
+            ns = replicate length n
+            mps = replicate length mp
+            args = zip4 psqs targets ns mps
             result = map solve args `using` parBuffer k rseq
-        return head result
+            resuls = map unsafePerformIO result
+        print resuls
+        head result
+        -- TODO : Implement this https://stackoverflow.com/questions/44615468/haskell-parallel-search-with-early-abort
