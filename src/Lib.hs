@@ -209,7 +209,7 @@ getAllPuzzles handle k = do
     return ((n, concat matrix): latter)
 
 solveOne :: (Int, [Int]) -> Int
-solveOne (n, state) | solvable = unsafePerformIO $ solve psq target n mp 
+solveOne (n, state) | solvable = unsafePerformIO $ solve (psq, target, n, mp) 
                     | otherwise = -1
   where array = fromListUnboxed (Z :. (n*n) :: DIM1) state
         target = fromListUnboxed (Z :. (n*n) :: DIM1) [0..(n*n-1)]

@@ -1,6 +1,6 @@
 module Main where
 
-import Lib (readInt, parSolveKpuzzle)
+import Lib (readInt, solveKpuzzle)
 import System.Exit(die)
 import System.Environment(getArgs, getProgName)
 import System.IO(openFile, IOMode(ReadMode))
@@ -12,7 +12,7 @@ main = do
         [filename] -> do
             handle <- openFile filename ReadMode
             k <- readInt handle
-            parSolveKpuzzle handle k
+            solveKpuzzle handle k
         _ -> do
             pn <- getProgName
             die $ "Usage: "++pn++" <filename>"
