@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 module Lib where
 import System.IO (hGetLine, Handle)
 import Data.PSQueue as PQ (PSQ, singleton, size, findMin, deleteMin, key, insert, toList)
@@ -11,6 +12,7 @@ import GHC.IOArray (IOArray)
 import Data.List (sortOn, intercalate)
 import System.Random (mkStdGen)
 import System.Random.Shuffle (shuffle')
+import Control.Exception (handle)
 
 -- | PuzzleState contains the current moves (fn), distance to goal (gn), current position of blank tile (zeroPos), and the current board state (state)
 data PuzzleState = PuzzleState {fn::Int,
@@ -187,6 +189,12 @@ solvability arr zeropos n | odd n && even (numinv arr) = True
                           | even n && odd  (zeropos `div` n + 1) && odd  (numinv arr) = True
                           | otherwise  = False
 
+
+parSolveKpuzzle:: Handle -> Int -> IO()
+parSolveKpuzzle handle k = do
+    -- puzzles <- getKpuzzles handle
+    error "finish this"
+
 -- | solveKpuzzle perform solving on multiple 8-puzzles using A* algorithm
 solveKpuzzle :: Handle -> Int -> IO ()
 solveKpuzzle handle 0 =
@@ -199,8 +207,9 @@ solveKpuzzle handle k = do
         gn     = manhattanDist array 0 n
         psq    = PQ.singleton (PuzzleState 0 gn (getZeroPos array 0) array) gn
         mp     = H.singleton (getHashKey array) 0 -- a hashmap storing visited states -> fn
-    step  <- solve psq target n mp
+        solvable = solvability array (getZeroPos array 0) n
 
+    step  <- if solvable then solve psq target n mp else return (-1)
     -- output step needed to solve the puzzle
     print step
 
@@ -215,7 +224,7 @@ solve psq target n mp = do
         curarray  = state $ key top
 
     -- if PQ.size psq == 0 then
-    if PQ.size psq == 0 || not (solvability curarray (zeroPos $ key top) n) then
+    if PQ.size psq == 0 then
         return (-1)
     else if curarray == target then
         return depth
