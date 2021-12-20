@@ -6,7 +6,7 @@ import Data.Maybe (fromJust, catMaybes)
 import Data.HashMap.Strict as H (HashMap, singleton, member, lookup, insert)
 import Data.Array.Repa as R (Array, U, DIM1, fromListUnboxed, Z (Z), (:.) ((:.)), (!), index, Shape (size), Source (extent), DIM0, zipWith, D, computeUnboxedS )
 import System.Environment (getProgName, getArgs)
-import Control.Monad ( forM )
+import Control.Monad ( forM, join )
 import GHC.IOArray (IOArray)
 import Data.List (sortOn, intercalate, zip4)
 import System.Random (mkStdGen)
@@ -21,13 +21,14 @@ data PuzzleState = PuzzleState {fn::Int,
                                 zeroPos::Int,
                                 state::Array U DIM1 Int} deriving (Show, Eq)
 
+-- | cmpUboxarray performs comparison between two different arrays, perfomed by doing pairwise comparison across the subsequent values in the two arrays
 cmpUboxarray:: Array U DIM1 Int -> Array U DIM1 Int -> Ordering
 cmpUboxarray a1 a2 = cmp a1 a2 0
     where cmp a1 a2 idx | idx ==  R.size (R.extent a1) = GT
                         | a1!(Z :. idx) == a2!(Z :. idx) = cmp a1 a2 (idx+1)
                         | otherwise = compare (a1!(Z :. idx)) (a2!(Z :. idx))
 
--- | PuzzleState is ordered by the total incurred cost and distance to goal (fn + gn) 
+-- | PuzzleState is ordered by the total incurred cost and distance to goal (fn + gn). Else, it perform comparison between the two array
 instance Ord PuzzleState where
     PuzzleState a b _ s1 `compare` PuzzleState c d _ s2 = if a+b /= c+d then (a+b) `compare` (c+d) else cmpUboxarray s1 s2
 
@@ -199,7 +200,7 @@ solvability arr zeropos n | odd n && even (numinv arr) = True
                           | even n && odd  (zeropos `div` n + 1) && odd  (numinv arr) = True
                           | otherwise  = False
 
-
+-- | GetAllPuzzles read all of the matrices in the handle and return a list of (n, array) where n is the size of the puzzle and array is the initial state of puzzle
 getAllPuzzles :: Handle -> Int -> IO [(Int, [Int])]
 getAllPuzzles handle 0 = return []
 getAllPuzzles handle k = do
@@ -208,42 +209,26 @@ getAllPuzzles handle k = do
     latter <- getAllPuzzles handle (k-1)
     return ((n, concat matrix): latter)
 
-solveOne :: (Int, [Int]) -> Int
-solveOne (n, state) | solvable = unsafePerformIO $ solve (psq, target, n, mp)
-                    | otherwise = -1
-  where array = fromListUnboxed (Z :. (n*n) :: DIM1) state
-        target = fromListUnboxed (Z :. (n*n) :: DIM1) [0..(n*n-1)]
-        gn     = manhattanDist array 0 n
-        psq    = PQ.singleton (PuzzleState 0 gn (getZeroPos array 0) array) gn
-        mp     = H.singleton (getHashKey array) 0 -- a hashmap storing visited states -> fn
-        solvable = solvability array (getZeroPos array 0) n
+-- | solveBool perform sequential solving on 8-puzzle using A* algorithm, returning True if the puzzle is solvable
+solveBool :: (PSQ PuzzleState Int,  Array U DIM1 Int, Int, H.HashMap String Int)-> IO Bool
+solveBool (psq, target, n, mp) = do
+    let top       = fromJust $ findMin psq
+        npsq      = deleteMin psq
+        depth     = fn $ key top
+        curarray  = state $ key top
 
+    -- if PQ.size psq == 0 then
+    if PQ.size psq == 0 then
+        return False
+    else if curarray == target then
+        return True
+    else do
+        let neighborList = getAllNeighbor (key top) n
+            validNeighborList = getValidNeighbor neighborList mp
+            newmap = addMap validNeighborList mp
+            newpsq = addPSQ validNeighborList npsq
+        solveBool (newpsq, target, n, newmap)
 
-parSolveKpuzzle:: Handle -> Int -> IO()
-parSolveKpuzzle handle k = do
-    allpuzzles <- getAllPuzzles handle k
-    let result = map solveOne allpuzzles `using` parBuffer 100 rseq -- `using` parList rseq
-    print result
-
--- | solveKpuzzle perform solving on multiple 8-puzzles using A* algorithm
-solveKpuzzle :: Handle -> Int -> IO ()
-solveKpuzzle handle 0 =
-    return ()
-solveKpuzzle handle k = do
-    n <- readInt handle
-    matrix <- getStateVector handle n n
-    let array  = fromListUnboxed (Z :. (n*n) :: DIM1) $ concat matrix
-        target = fromListUnboxed (Z :. (n*n) :: DIM1) [0..(n*n-1)]
-        gn     = manhattanDist array 0 n
-        psq    = PQ.singleton (PuzzleState 0 gn (getZeroPos array 0) array) gn
-        mp     = H.singleton (getHashKey array) 0 -- a hashmap storing visited states -> fn
-        solvable = solvability array (getZeroPos array 0) n
-
-    step  <- if solvable then solveParPSQ (psq, target, n, mp, 3) else return (-1)
-    -- output step needed to solve the puzzle
-    print step
-
-    solveKpuzzle handle (k-1)
 
 -- | solve perform sequential solving on 8-puzzle using A* algorithm
 solve :: (PSQ PuzzleState Int,  Array U DIM1 Int, Int, H.HashMap String Int)-> IO Int
@@ -265,10 +250,20 @@ solve (psq, target, n, mp) = do
             newpsq = addPSQ validNeighborList npsq
         solve (newpsq, target, n, newmap)
 
+-- | solveOnepuzzle perform solving on a single 8-puzzle
+solveOnepuzzle :: (Int, [Int]) -> Int
+solveOnepuzzle (n, state) | solvable = unsafePerformIO $ solve (psq, target, n, mp)
+                    | otherwise = -1
+  where array = fromListUnboxed (Z :. (n*n) :: DIM1) state
+        target = fromListUnboxed (Z :. (n*n) :: DIM1) [0..(n*n-1)]
+        gn     = manhattanDist array 0 n
+        psq    = PQ.singleton (PuzzleState 0 gn (getZeroPos array 0) array) gn
+        mp     = H.singleton (getHashKey array) 0 -- a hashmap storing visited states -> fn
+        solvable = solvability array (getZeroPos array 0) n
 
--- | solve parallel by Paralleilizing the Neighbor State Calculation
-solveParNeighbor :: PSQ PuzzleState Int -> Array U DIM1 Int -> Int -> H.HashMap String Int-> IO Int
-solveParNeighbor psq target n mp = do
+-- | solveParNeighbor perform solving by parallelizing the calculation of GetAllNeighbor into 4 different threads
+solveParNeighbor :: (PSQ PuzzleState Int , Array U DIM1 Int , Int , H.HashMap String Int)-> IO Int
+solveParNeighbor (psq, target, n, mp) = do
     let top       = fromJust $ findMin psq
         npsq      = deleteMin psq
         depth     = fn $ key top
@@ -280,19 +275,20 @@ solveParNeighbor psq target n mp = do
     else if curarray == target then
         return depth
     else do
-        let neighborList = getAllNeighbor (key top) n
+        let neighborList = getAllNeighborPar (key top) n
             validNeighborList = getValidNeighbor neighborList mp
             newmap = addMap validNeighborList mp
             newpsq = addPSQ validNeighborList npsq
-        solveParNeighbor newpsq target n newmap
+        solveParNeighbor (newpsq, target, n, newmap)
 
--- | solve perform sequential solving on 8-puzzle using A* algorithm
-solveParPSQ :: (PSQ PuzzleState Int, Array U DIM1 Int, Int, HashMap String Int, Int) -> IO Int
-solveParPSQ (psq, target, n, mp, k) = do
+-- | solveParPSQ perform solving by creating multiple priority queues and abort the other thread once we have solved the puzzle
+
+solveParPSQ (psq, target, n, mp) = do
     let top      = fromJust $ findMin psq
         npsq     = deleteMin psq
         depth    = fn $ key top
         curarray = state $ key top
+        k = 4
 
     -- if PQ.size psq == 0 then
     if PQ.size psq == 0 then
@@ -304,7 +300,7 @@ solveParPSQ (psq, target, n, mp, k) = do
             validNeighborList = getValidNeighbor neighborList mp
             newmap = addMap validNeighborList mp
             newpsq = addPSQ validNeighborList npsq
-        solveParPSQ (newpsq, target, n, newmap, k)
+        solveParPSQ (newpsq, target, n, newmap)
     else do
         let length = PQ.size psq
             psqs = [PQ.singleton (key x) (prio x) | x <- PQ.toList psq]
@@ -312,8 +308,46 @@ solveParPSQ (psq, target, n, mp, k) = do
             ns = replicate length n
             mps = replicate length mp
             args = zip4 psqs targets ns mps
-            result = map solve args `using` parBuffer k rseq
-            resuls = map unsafePerformIO result
-        print resuls
+            result = map solveBool args `using` parBuffer k rseq
         head result
         -- TODO : Implement this https://stackoverflow.com/questions/44615468/haskell-parallel-search-with-early-abort
+
+
+-- | puzzleSolver is the base function for other solver
+puzzleSolver :: (Num a, Show a, Num v) => Handle -> Int -> ((PSQ PuzzleState Int, Array U DIM1 Int, Int, HashMap String v) -> IO a) -> IO ()
+puzzleSolver handle 0 solver = return ()
+puzzleSolver handle k solver = do
+    n <- readInt handle
+    matrix <- getStateVector handle n n
+    let array  = fromListUnboxed (Z :. (n*n) :: DIM1) $ concat matrix
+        target = fromListUnboxed (Z :. (n*n) :: DIM1) [0..(n*n-1)]
+        gn     = manhattanDist array 0 n
+        psq    = PQ.singleton (PuzzleState 0 gn (getZeroPos array 0) array) gn
+        mp     = H.singleton (getHashKey array) 0 -- a hashmap storing visited states -> fn
+        solvable = solvability array (getZeroPos array 0) n
+
+    step  <- if solvable then solver (psq, target, n, mp) else return (-1)
+    print step
+
+    solveKpuzzle handle (k-1)
+
+
+-- | solveKpuzzle perform solving on mutliple 8-puzzle in a sequential manner
+solveKpuzzle :: Handle -> Int -> IO ()
+solveKpuzzle handle k = puzzleSolver handle k solve
+
+-- | parSolveKpuzzle perform solving on mutliple 8-puzzle in a parallel manner, by sparking different threads to solve different puzzles
+parSolveKpuzzle:: Handle -> Int -> IO()
+parSolveKpuzzle handle k = do
+    allpuzzles <- getAllPuzzles handle k
+    let result = map solveOnepuzzle allpuzzles `using` parBuffer 100 rseq -- `using` parList rseq
+    print result
+
+-- | parNeighborSolveKpuzzle perform solving on multiple 80puzzle in a parallel manner, by sparking different threads to calculate the valid Neighbors
+parNeighborSolveKpuzzle :: Handle -> Int -> IO()
+parNeighborSolveKpuzzle handle k = puzzleSolver handle k solveParNeighbor
+
+parPSQSolvePuzzle :: Handle -> Int -> IO()
+parPSQSolvePuzzle handle k = puzzleSolver handle k solveParPSQ
+
+
