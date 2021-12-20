@@ -52,3 +52,8 @@ stack exec 15puzzle-exe "input.txt"
 ```
 stack exec -- haddock --html src/Lib.hs app/Main.hs app/GenFile.hs --hyperlinked-source --odir=docs
 ```
+
+## Example Generation
+```
+stack exec 15puzzle-generate 100 3 "test/test5.txt"
+```
