@@ -29,6 +29,7 @@ dependencies:
 - unordered-containers
 - repa
 - concurrent-hashtable
+- parallel
 
 library:
   source-dirs: src
@@ -41,12 +42,14 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -eventlog
     dependencies:
     - 15puzzle
     - PSQueue
     - unordered-containers
     - repa
     - concurrent-hashtable
+    - parallel
 
   15puzzle-generate:
     main:                GenFile.hs

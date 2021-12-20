@@ -34,6 +34,7 @@ library
       PSQueue
     , base >=4.7 && <5
     , concurrent-hashtable
+    , parallel
     , random
     , random-shuffle
     , repa
@@ -49,12 +50,13 @@ executable 15puzzle-exe
       Paths_15puzzle
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog
   build-depends:
       15puzzle
     , PSQueue
     , base >=4.7 && <5
     , concurrent-hashtable
+    , parallel
     , random
     , random-shuffle
     , repa
@@ -76,6 +78,7 @@ executable 15puzzle-generate
     , PSQueue
     , base >=4.7 && <5
     , concurrent-hashtable
+    , parallel
     , random
     , random-shuffle
     , repa
@@ -97,6 +100,7 @@ test-suite 15puzzle-test
     , PSQueue
     , base >=4.7 && <5
     , concurrent-hashtable
+    , parallel
     , random
     , random-shuffle
     , repa
