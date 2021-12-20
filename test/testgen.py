@@ -4,12 +4,12 @@ import random
 if __name__ == '__main__':
     
     case_num = 100
-    outfile = "./test1.txt"
+    outfile = "./test4.txt"
 
     with open(outfile, 'w') as f:
         f.write(f"{case_num}\n")
         for i in range(case_num):
-            size = random.randint(2,4)
+            size = 2 # random.randint(2,4)
             f.write(f"{size}\n")
             l = [i for i in range(size*size)]
             random.shuffle(l)
