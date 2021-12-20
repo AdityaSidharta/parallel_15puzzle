@@ -1,9 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
-{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 module Lib where
 import System.IO (hGetLine, Handle)
 import Data.PSQueue as PQ (PSQ, singleton, size, findMin, deleteMin, key, insert, toList)
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, catMaybes)
 import Data.HashMap.Strict as H (HashMap, singleton, member, lookup, insert)
 import Data.Array.Repa as R (Array, U, DIM1, fromListUnboxed, Z (Z), (:.) ((:.)), (!), index, Shape (size), Source (extent), DIM0, zipWith, D, computeUnboxedS )
 import System.Environment (getProgName, getArgs)
@@ -13,7 +12,7 @@ import Data.List (sortOn, intercalate)
 import System.Random (mkStdGen)
 import System.Random.Shuffle (shuffle')
 import Control.Exception (handle)
-import Control.Parallel.Strategies(using, parList, rseq, withStrategy, parBuffer, rdeepseq, runEval, parMap)
+import Control.Parallel.Strategies(Strategy, rpar, using, parList, rseq, withStrategy, parBuffer, rdeepseq, runEval, parMap)
 import GHC.IO (unsafePerformIO)
 
 -- | PuzzleState contains the current moves (fn), distance to goal (gn), current position of blank tile (zeroPos), and the current board state (state)
@@ -148,6 +147,18 @@ getRightNeighbor (PuzzleState f g ze reparray) n | col >=n = Nothing
 getAllNeighbor:: PuzzleState -> Int -> [PuzzleState]
 getAllNeighbor p n = [x | Just x <- [getUpNeighbor p n, getDownNeighbor p n, getLeftNeighbor p n, getRightNeighbor p n]]
 
+-- | getAllNeighborPar return all of the neighboring state of the current PuzzleState
+getAllNeighborPar p n = catMaybes (runEval $ do
+    a <- rpar (getUpNeighbor p n)
+    b <- rpar (getDownNeighbor p n)
+    c <- rpar (getLeftNeighbor p n)
+    d <- rpar (getRightNeighbor p n)
+    rseq a
+    rseq b
+    rseq c
+    rseq d
+    return [a, b, c, d])
+
 -- | getValidNeighbor filters all neighbor puzzles that improves (fn) or have not been discovered previously (not in mp)
 getValidNeighbor::[PuzzleState] -> H.HashMap String Int-> [PuzzleState]
 getValidNeighbor ps mp = filter (filterInMap mp) ps
@@ -231,7 +242,7 @@ solveKpuzzle handle k = do
         mp     = H.singleton (getHashKey array) 0 -- a hashmap storing visited states -> fn
         solvable = solvability array (getZeroPos array 0) n
 
-    step  <- if solvable then solve psq target n mp else return (-1)
+    step  <- if solvable then solveParNeighbor psq target n mp else return (-1)
     -- output step needed to solve the puzzle
     print step
 
@@ -265,3 +276,22 @@ solve psq target n mp = do
         solve newpsq target n newmap
 
 
+-- | solve parallel by Paralleilizing the Neighbor State Calculation
+solveParNeighbor :: PSQ PuzzleState Int -> Array U DIM1 Int -> Int -> H.HashMap String Int-> IO Int
+solveParNeighbor psq target n mp = do
+    let top       = fromJust $ findMin psq
+        npsq      = deleteMin psq
+        depth     = fn $ key top
+        curarray  = state $ key top
+
+    -- if PQ.size psq == 0 then
+    if PQ.size psq == 0 then
+        return (-1)
+    else if curarray == target then
+        return depth
+    else do
+        let neighborList = getAllNeighbor (key top) n
+            validNeighborList = getValidNeighbor neighborList mp
+            newmap = addMap validNeighborList mp
+            newpsq = addPSQ validNeighborList npsq
+        solveParNeighbor newpsq target n newmap

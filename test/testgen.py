@@ -21,13 +21,13 @@ def swapzero(step, n):
 
 if __name__ == '__main__':
     
-    case_num = 100
-    outfile = "./test5.txt"
+    case_num = 500
+    outfile = "./input.txt"
 
     with open(outfile, 'w') as f:
         f.write(f"{case_num}\n")
         for i in range(case_num):
-            size = 4 # random.randint(2,4)
+            size = 4
             f.write(f"{size}\n")
             l = swapzero(80, size)
             for i in range(l.shape[0]):

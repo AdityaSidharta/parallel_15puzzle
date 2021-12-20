@@ -57,3 +57,13 @@ stack exec -- haddock --html src/Lib.hs app/Main.hs app/GenFile.hs --hyperlinked
 ```
 stack exec 15puzzle-generate 100 3 "test/test5.txt"
 ```
+
+## Building the main module
+```
+stack ghc -- -threaded -rtsopts -eventlog app/Main.hs
+```
+
+## Running the experiment
+```
+./app/Main "input.txt" +RTS -ls -N8
+```
