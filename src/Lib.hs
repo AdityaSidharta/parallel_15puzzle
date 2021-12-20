@@ -214,7 +214,7 @@ solveOne (n, state) | solvable = unsafePerformIO $ solve psq target n mp
 parSolveKpuzzle:: Handle -> Int -> IO()
 parSolveKpuzzle handle k = do
     allpuzzles <- getAllPuzzles handle k
-    let result = parMap rseq solveOne allpuzzles -- `using` parList rseq
+    let result = map solveOne allpuzzles `using` parBuffer 100 rseq -- `using` parList rseq
     print result
 
 -- | solveKpuzzle perform solving on multiple 8-puzzles using A* algorithm

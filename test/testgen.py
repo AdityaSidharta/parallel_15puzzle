@@ -29,7 +29,7 @@ if __name__ == '__main__':
         for i in range(case_num):
             size = 4 # random.randint(2,4)
             f.write(f"{size}\n")
-            l = swapzero(120, size)
+            l = swapzero(80, size)
             for i in range(l.shape[0]):
                 if (i+1) % size == 0:
                     f.write(f"{l[i]}\n")
