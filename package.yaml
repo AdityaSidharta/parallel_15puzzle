@@ -28,6 +28,7 @@ dependencies:
 - random
 - unordered-containers
 - repa
+- concurrent-hashtable
 
 library:
   source-dirs: src
@@ -45,6 +46,7 @@ executables:
     - PSQueue
     - unordered-containers
     - repa
+    - concurrent-hashtable
 
   15puzzle-generate:
     main:                GenFile.hs
@@ -76,3 +78,4 @@ tests:
     - random
     - unordered-containers
     - repa
+    - concurrent-hashtable
