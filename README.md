@@ -80,5 +80,5 @@ stack ghc -- -threaded -rtsopts -eventlog -main-is Sequential app/Sequential.hs
 ./app/ParallelNeighbor "smallinput.txt" +RTS -ls -N4
 ./app/ParallelPriorityQueue "smallinput.txt" +RTS -ls -N4
 ./app/ParallelPuzzle "smallinput.txt" +RTS -ls -N4
-./app/Sequential "smallinput.txt" +RTS -ls -N4  
+./app/Sequential "smallinput.txt" +RTS -ls -N4
 ```
