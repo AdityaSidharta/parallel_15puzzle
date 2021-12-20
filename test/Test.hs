@@ -1,6 +1,6 @@
 import Test.Tasty ( defaultMain, testGroup, TestTree )
 import Test.Tasty.HUnit ( testCase, assertEqual, Assertion, (@?=) )
-import Lib (numinv, solvability, getStateVector, getValidNeighbor, readInt, solveKpuzzle, generateArrays, formatArray, formatArrays, manhattanDist, hammingDist, getZeroPos, swapTwo, getUpNeighbor, PuzzleState (PuzzleState), getRightNeighbor, getLeftNeighbor, getDownNeighbor, getAllNeighbor, hash, getHashKey, addMap)
+import Lib (numinv, getAllNeighborPar, solvability, getStateVector, getValidNeighbor, readInt, solveKpuzzle, generateArrays, formatArray, formatArrays, manhattanDist, hammingDist, getZeroPos, swapTwo, getUpNeighbor, PuzzleState (PuzzleState), getRightNeighbor, getLeftNeighbor, getDownNeighbor, getAllNeighbor, hash, getHashKey, addMap)
 import System.IO (openFile, IOMode (ReadMode))
 import Data.Array.Repa (DIM1, fromListUnboxed, Z (Z), (:.) ((:.)), Array, U, computeS)
 import Data.HashMap.Strict as H ( fromList, singleton )
@@ -23,6 +23,7 @@ unitTests = testGroup "Unit Tests" [
   testCase "getLeftNeighborTest" getLeftNeighborTest,
   testCase "getRightNeighborTest" getRightNeighborTest,
   testCase "getAllNeighborTest" getAllNeighborTest,
+  testCase "getAllNeighborParTest" getAllNeighborParTest,
   testCase "hashTest" hashTest,
   testCase "getHashKeyTest" getHashKeyTest,
   testCase "addMapTest" addMapTest,
@@ -142,6 +143,17 @@ getAllNeighborTest = do
 
   getAllNeighbor puzx 2 @?= [puzres1, puzres2]
 
+getAllNeighborParTest :: Assertion
+getAllNeighborParTest = do
+  let x = fromListUnboxed (Z :. (2*2) :: DIM1) [0,1,2,3]
+  let puzx = PuzzleState 0 0 0 x
+  let res1 = fromListUnboxed (Z :. (2*2) :: DIM1) [2,1,0,3]
+  let puzres1 = PuzzleState 1 2 2 res1
+  let res2 = fromListUnboxed (Z :. (2*2) :: DIM1) [1,0,2,3]
+  let puzres2 = PuzzleState 1 2 1 res2
+
+  getAllNeighborPar puzx 2 @?= [puzres1, puzres2]
+
 hashTest :: Assertion
 hashTest = do
   let x = fromListUnboxed (Z :. (2*2) :: DIM1) [0,1,2,3]
@@ -182,13 +194,13 @@ getValidNeighborTest = do
 numinvTest :: Assertion
 numinvTest = do
   let x = fromListUnboxed (Z :. (2*2) :: DIM1) [3,1,0,2]
-  numinv x @?= 4
+  numinv x @?= 1
   let y = fromListUnboxed (Z :. (2*2) :: DIM1) [0,1,2,3]
-  numinv y @?= 0
+  numinv y @?= 3
 
 solvabilityTest :: Assertion
 solvabilityTest = do
   let x = fromListUnboxed (Z :. (3*3) :: DIM1) [1,8,2,0,4,3,7,6,5]
-  solvability x 3 3 @?= False
+  solvability x 3 3 @?= True
   let y = fromListUnboxed (Z :. (3*3) :: DIM1) [8,1,2,0,4,3,7,6,5]
-  solvability y 3 3 @?= True
+  solvability y 3 3 @?= False
