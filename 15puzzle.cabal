@@ -34,6 +34,7 @@ library
       PSQueue
     , base >=4.7 && <5
     , concurrent-hashtable
+    , parallel
     , random
     , random-shuffle
     , repa
@@ -55,6 +56,7 @@ executable 15puzzle-exe
     , PSQueue
     , base >=4.7 && <5
     , concurrent-hashtable
+    , parallel
     , random
     , random-shuffle
     , repa
@@ -76,6 +78,7 @@ executable 15puzzle-generate
     , PSQueue
     , base >=4.7 && <5
     , concurrent-hashtable
+    , parallel
     , random
     , random-shuffle
     , repa
@@ -97,6 +100,7 @@ test-suite 15puzzle-test
     , PSQueue
     , base >=4.7 && <5
     , concurrent-hashtable
+    , parallel
     , random
     , random-shuffle
     , repa

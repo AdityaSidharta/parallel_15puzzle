@@ -13,6 +13,8 @@ import Data.List (sortOn, intercalate)
 import System.Random (mkStdGen)
 import System.Random.Shuffle (shuffle')
 import Control.Exception (handle)
+import Control.Parallel.Strategies(using, parList, rseq, withStrategy, parBuffer, rdeepseq, runEval, parMap)
+import GHC.IO (unsafePerformIO)
 
 -- | PuzzleState contains the current moves (fn), distance to goal (gn), current position of blank tile (zeroPos), and the current board state (state)
 data PuzzleState = PuzzleState {fn::Int,
@@ -190,10 +192,30 @@ solvability arr zeropos n | odd n && even (numinv arr) = True
                           | otherwise  = False
 
 
+getAllPuzzles :: Handle -> Int -> IO [(Int, [Int])]
+getAllPuzzles handle 0 = return []
+getAllPuzzles handle k = do
+    n <- readInt handle
+    matrix <- getStateVector handle n n
+    latter <- getAllPuzzles handle (k-1)
+    return ((n, concat matrix): latter)
+
+solveOne :: (Int, [Int]) -> Int
+solveOne (n, state) | solvable = unsafePerformIO $ solve psq target n mp 
+                    | otherwise = -1
+  where array = fromListUnboxed (Z :. (n*n) :: DIM1) state
+        target = fromListUnboxed (Z :. (n*n) :: DIM1) [0..(n*n-1)]
+        gn     = manhattanDist array 0 n
+        psq    = PQ.singleton (PuzzleState 0 gn (getZeroPos array 0) array) gn
+        mp     = H.singleton (getHashKey array) 0 -- a hashmap storing visited states -> fn
+        solvable = solvability array (getZeroPos array 0) n
+
+    
 parSolveKpuzzle:: Handle -> Int -> IO()
 parSolveKpuzzle handle k = do
-    -- puzzles <- getKpuzzles handle
-    error "finish this"
+    allpuzzles <- getAllPuzzles handle k
+    let result = parMap rseq solveOne allpuzzles -- `using` parList rseq
+    print result
 
 -- | solveKpuzzle perform solving on multiple 8-puzzles using A* algorithm
 solveKpuzzle :: Handle -> Int -> IO ()

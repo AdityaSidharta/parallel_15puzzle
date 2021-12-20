@@ -29,6 +29,7 @@ dependencies:
 - unordered-containers
 - repa
 - concurrent-hashtable
+- parallel
 
 library:
   source-dirs: src
@@ -47,6 +48,7 @@ executables:
     - unordered-containers
     - repa
     - concurrent-hashtable
+    - parallel
 
   15puzzle-generate:
     main:                GenFile.hs
@@ -60,6 +62,7 @@ executables:
     - 15puzzle
     - random-shuffle
     - random
+    - parallel
 
 tests:
   15puzzle-test:
@@ -79,3 +82,4 @@ tests:
     - unordered-containers
     - repa
     - concurrent-hashtable
+    - parallel
