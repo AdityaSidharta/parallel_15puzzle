@@ -175,16 +175,16 @@ numinv :: Array U DIM1 Int -> Int
 numinv arr = aux arr 0 1 0
     where aux arr i j r | i == R.size (R.extent arr) = r
                         | j == R.size (R.extent arr) = aux arr (i+1) (i+2) r
-                        | arr!(Z:.j) == 0 = aux arr i (j+1) r
-                        | arr!(Z:.i) < arr!(Z:.j) = aux arr i (j+1) r
-                        | arr!(Z:.i) > arr!(Z:.j) = aux arr i (j+1) (r+1)
+                        | arr!(Z:.i) == 0 || arr!(Z:.j) == 0 = aux arr i (j+1) r
+                        | arr!(Z:.i) > arr!(Z:.j) = aux arr i (j+1) r
+                        | arr!(Z:.i) < arr!(Z:.j) = aux arr i (j+1) (r+1)
                         | otherwise = error "inversion error!"
 
 -- | solvability checks whether the given board (arr) with the current zero position (zeropos) is solvable 8-puzzle problem
 solvability:: Array U DIM1 Int -> Int -> Int -> Bool
 solvability arr zeropos n | odd n && even (numinv arr) = True
-                          | even n && even (zeropos `mod` n +1) && even (numinv arr) = True
-                          | even n && odd  (zeropos `mod` n +1) && odd  (numinv arr) = True
+                          | even n && even (zeropos `div` n + 1) && even (numinv arr) = True
+                          | even n && odd  (zeropos `div` n + 1) && odd  (numinv arr) = True
                           | otherwise  = False
 
 -- | solveKpuzzle perform solving on multiple 8-puzzles using A* algorithm
@@ -215,7 +215,7 @@ solve psq target n mp = do
         curarray  = state $ key top
 
     -- if PQ.size psq == 0 then
-    if not (solvability curarray (zeroPos $ key top) n) || PQ.size psq == 0 then
+    if PQ.size psq == 0 || not (solvability curarray (zeroPos $ key top) n) then
         return (-1)
     else if curarray == target then
         return depth
@@ -230,8 +230,7 @@ solve psq target n mp = do
             newpsq = addPSQ validNeighborList npsq
         --print curarray
         --printList validNeighborList
-        --print $ PQ.toList newpsq
         --print $ PQ.size newpsq
         solve newpsq target n newmap
-        
+
 
