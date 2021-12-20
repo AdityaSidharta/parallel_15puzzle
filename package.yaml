@@ -63,6 +63,7 @@ executables:
     - 15puzzle
     - random-shuffle
     - random
+    - parallel
 
 tests:
   15puzzle-test:
@@ -82,3 +83,4 @@ tests:
     - unordered-containers
     - repa
     - concurrent-hashtable
+    - parallel

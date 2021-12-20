@@ -1,9 +1,9 @@
 module Main where
 
-import Lib (readInt, solveKpuzzle)
+import Lib (readInt, parSolveKpuzzle)
 import System.Exit(die)
 import System.Environment(getArgs, getProgName)
-import System.IO(readFile, openFile, IOMode(ReadMode))
+import System.IO(openFile, IOMode(ReadMode))
 
 main :: IO ()
 main = do
@@ -12,7 +12,7 @@ main = do
         [filename] -> do
             handle <- openFile filename ReadMode
             k <- readInt handle
-            solveKpuzzle handle k
+            parSolveKpuzzle handle k
         _ -> do
             pn <- getProgName
-            error $ "Usage: "++pn++" <filename>"
+            die $ "Usage: "++pn++" <filename>"
