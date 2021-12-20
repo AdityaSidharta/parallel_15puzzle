@@ -58,11 +58,81 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -eventlog
     - -main-is GenFile
     dependencies:
     - 15puzzle
     - random-shuffle
     - random
+    - parallel
+
+  sequential-exe:
+    main:                Sequential.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -eventlog
+    - -main-is Sequential
+    dependencies:
+    - 15puzzle
+    - PSQueue
+    - unordered-containers
+    - repa
+    - concurrent-hashtable
+    - parallel
+
+  parneighbor-exe:
+    main:                ParallelNeighbor.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -eventlog
+    - -main-is ParallelNeighbor
+    dependencies:
+    - 15puzzle
+    - PSQueue
+    - unordered-containers
+    - repa
+    - concurrent-hashtable
+    - parallel
+
+  parpq-exe:
+    main:                ParallelPriorityQueue.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -eventlog
+    - -main-is ParallelPriorityQueue
+    dependencies:
+    - 15puzzle
+    - PSQueue
+    - unordered-containers
+    - repa
+    - concurrent-hashtable
+    - parallel
+
+
+  parpuzzle-exe:
+    main:                ParallelPuzzle.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -eventlog
+    - -main-is ParallelPuzzle
+    dependencies:
+    - 15puzzle
+    - PSQueue
+    - unordered-containers
+    - repa
+    - concurrent-hashtable
     - parallel
 
 tests:

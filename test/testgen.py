@@ -21,8 +21,8 @@ def swapzero(step, n):
 
 if __name__ == '__main__':
     
-    case_num = 500
-    outfile = "./input.txt"
+    case_num = 50
+    outfile = "./smallinput.txt"
 
     with open(outfile, 'w') as f:
         f.write(f"{case_num}\n")

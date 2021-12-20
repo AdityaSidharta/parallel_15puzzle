@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+
 module Lib where
 import System.IO (hGetLine, Handle)
 import Data.PSQueue as PQ (PSQ, singleton, prio, size, findMin, deleteMin, key, insert, toList)
@@ -6,7 +7,7 @@ import Data.Maybe (fromJust, catMaybes)
 import Data.HashMap.Strict as H (HashMap, singleton, member, lookup, insert)
 import Data.Array.Repa as R (Array, U, DIM1, fromListUnboxed, Z (Z), (:.) ((:.)), (!), index, Shape (size), Source (extent), DIM0, zipWith, D, computeUnboxedS )
 import System.Environment (getProgName, getArgs)
-import Control.Monad ( forM, join )
+import Control.Monad ( forM, join, void )
 import GHC.IOArray (IOArray)
 import Data.List (sortOn, intercalate, zip4)
 import System.Random (mkStdGen)
@@ -14,6 +15,7 @@ import System.Random.Shuffle (shuffle')
 import Control.Exception (handle)
 import Control.Parallel.Strategies(Strategy, rpar, using, parList, rseq, withStrategy, parBuffer, rdeepseq, runEval, parMap)
 import GHC.IO (unsafePerformIO)
+import Control.Concurrent (newEmptyMVar, newMVar, forkIO, tryPutMVar, takeMVar, putMVar, readMVar, killThread)
 
 -- | PuzzleState contains the current moves (fn), distance to goal (gn), current position of blank tile (zeroPos), and the current board state (state)
 data PuzzleState = PuzzleState {fn::Int,
@@ -148,15 +150,6 @@ getRightNeighbor (PuzzleState f g ze reparray) n | col >=n = Nothing
 getAllNeighbor:: PuzzleState -> Int -> [PuzzleState]
 getAllNeighbor p n = [x | Just x <- [getUpNeighbor p n, getDownNeighbor p n, getLeftNeighbor p n, getRightNeighbor p n]]
 
--- | getAllNeighborPar return all of the neighboring state of the current PuzzleState
-getAllNeighborPar:: PuzzleState -> Int -> [PuzzleState]
-getAllNeighborPar p n = catMaybes (runEval $ do
-    a <- rpar (getUpNeighbor p n)
-    b <- rpar (getDownNeighbor p n)
-    c <- rpar (getLeftNeighbor p n)
-    d <- rpar (getRightNeighbor p n)
-    return [a, b, c, d])
-
 -- | getValidNeighbor filters all neighbor puzzles that improves (fn) or have not been discovered previously (not in mp)
 getValidNeighbor::[PuzzleState] -> H.HashMap String Int-> [PuzzleState]
 getValidNeighbor ps mp = filter (filterInMap mp) ps
@@ -209,6 +202,15 @@ getAllPuzzles handle k = do
     latter <- getAllPuzzles handle (k-1)
     return ((n, concat matrix): latter)
 
+-- | getAllNeighborPar return all of the neighboring state of the current PuzzleState
+getAllNeighborPar:: PuzzleState -> Int -> [PuzzleState]
+getAllNeighborPar p n = catMaybes (runEval $ do
+    a <- rpar (getUpNeighbor p n)
+    b <- rpar (getDownNeighbor p n)
+    c <- rpar (getLeftNeighbor p n)
+    d <- rpar (getRightNeighbor p n)
+    return [a, b, c, d])
+
 -- | solveBool perform sequential solving on 8-puzzle using A* algorithm, returning True if the puzzle is solvable
 solveBool :: (PSQ PuzzleState Int,  Array U DIM1 Int, Int, H.HashMap String Int)-> IO Bool
 solveBool (psq, target, n, mp) = do
@@ -228,7 +230,6 @@ solveBool (psq, target, n, mp) = do
             newmap = addMap validNeighborList mp
             newpsq = addPSQ validNeighborList npsq
         solveBool (newpsq, target, n, newmap)
-
 
 -- | solve perform sequential solving on 8-puzzle using A* algorithm
 solve :: (PSQ PuzzleState Int,  Array U DIM1 Int, Int, H.HashMap String Int)-> IO Int
@@ -282,7 +283,7 @@ solveParNeighbor (psq, target, n, mp) = do
         solveParNeighbor (newpsq, target, n, newmap)
 
 -- | solveParPSQ perform solving by creating multiple priority queues and abort the other thread once we have solved the puzzle
-
+solveParPSQ :: (PSQ PuzzleState Int, Array U DIM1 Int, Int, HashMap String Int) -> IO Int
 solveParPSQ (psq, target, n, mp) = do
     let top      = fromJust $ findMin psq
         npsq     = deleteMin psq
@@ -294,7 +295,7 @@ solveParPSQ (psq, target, n, mp) = do
     if PQ.size psq == 0 then
         return (-1)
     else if curarray == target then
-        return depth
+        return 1
     else if PQ.size psq < k then do
         let neighborList = getAllNeighbor (key top) n
             validNeighborList = getValidNeighbor neighborList mp
@@ -303,14 +304,16 @@ solveParPSQ (psq, target, n, mp) = do
         solveParPSQ (newpsq, target, n, newmap)
     else do
         let length = PQ.size psq
-            psqs = [PQ.singleton (key x) (prio x) | x <- PQ.toList psq]
-            targets = replicate length target
-            ns = replicate length n
-            mps = replicate length mp
-            args = zip4 psqs targets ns mps
-            result = map solveBool args `using` parBuffer k rseq
-        head result
-        -- TODO : Implement this https://stackoverflow.com/questions/44615468/haskell-parallel-search-with-early-abort
+        resultV <- newEmptyMVar
+        runningV <- newMVar length
+        threads <- forM [PQ.singleton (key x) (prio x) | x <- PQ.toList psq] $ \ipsq -> forkIO $ do
+            if unsafePerformIO(solveBool(psq, target, n, mp)) then void (tryPutMVar resultV 1) else (do m <- takeMVar runningV
+                                                                                                        if m == 1
+                                                                                                               then void (tryPutMVar resultV 0)
+                                                                                                               else putMVar runningV (m-1))
+        result <- readMVar resultV
+        mapM_ killThread threads
+        return result
 
 
 -- | puzzleSolver is the base function for other solver
@@ -329,7 +332,7 @@ puzzleSolver handle k solver = do
     step  <- if solvable then solver (psq, target, n, mp) else return (-1)
     print step
 
-    solveKpuzzle handle (k-1)
+    puzzleSolver handle (k-1) solver
 
 
 -- | solveKpuzzle perform solving on mutliple 8-puzzle in a sequential manner
