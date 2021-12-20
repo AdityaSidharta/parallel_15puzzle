@@ -1,18 +1,18 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Lib where
 import System.IO (hGetLine, Handle)
-import Data.PSQueue as PQ (PSQ, singleton, size, findMin, deleteMin, key, insert, toList)
+import Data.PSQueue as PQ (PSQ, singleton, prio, size, findMin, deleteMin, key, insert, toList)
 import Data.Maybe (fromJust, catMaybes)
 import Data.HashMap.Strict as H (HashMap, singleton, member, lookup, insert)
 import Data.Array.Repa as R (Array, U, DIM1, fromListUnboxed, Z (Z), (:.) ((:.)), (!), index, Shape (size), Source (extent), DIM0, zipWith, D, computeUnboxedS )
 import System.Environment (getProgName, getArgs)
 import Control.Monad ( forM )
 import GHC.IOArray (IOArray)
-import Data.List (sortOn, intercalate)
+import Data.List (sortOn, intercalate, zip4)
 import System.Random (mkStdGen)
 import System.Random.Shuffle (shuffle')
 import Control.Exception (handle)
-import Control.Parallel.Strategies(runEval, rpar, using, parList, rseq, Strategy)
+import Control.Parallel.Strategies(runEval, parBuffer, rpar, using, parList, rseq, Strategy)
 
 -- | PuzzleState contains the current moves (fn), distance to goal (gn), current position of blank tile (zeroPos), and the current board state (state)
 data PuzzleState = PuzzleState {fn::Int,
@@ -147,15 +147,12 @@ getAllNeighbor:: PuzzleState -> Int -> [PuzzleState]
 getAllNeighbor p n = [x | Just x <- [getUpNeighbor p n, getDownNeighbor p n, getLeftNeighbor p n, getRightNeighbor p n]]
 
 -- | getAllNeighborPar return all of the neighboring state of the current PuzzleState
+getAllNeighborPar:: PuzzleState -> Int -> [PuzzleState]
 getAllNeighborPar p n = catMaybes (runEval $ do
     a <- rpar (getUpNeighbor p n)
     b <- rpar (getDownNeighbor p n)
     c <- rpar (getLeftNeighbor p n)
     d <- rpar (getRightNeighbor p n)
-    rseq a
-    rseq b
-    rseq c
-    rseq d
     return [a, b, c, d])
 
 -- | getValidNeighbor filters all neighbor puzzles that improves (fn) or have not been discovered previously (not in mp)
@@ -220,16 +217,16 @@ solveKpuzzle handle k = do
         psq    = PQ.singleton (PuzzleState 0 gn (getZeroPos array 0) array) gn
         mp     = H.singleton (getHashKey array) 0 -- a hashmap storing visited states -> fn
         solvable = solvability array (getZeroPos array 0) n
-
-    step  <- if solvable then solveParNeighbor psq target n mp else return (-1)
+ 
+    step  <- if solvable then (solveParPSQ psq target n mp 3) else return (-1)
     -- output step needed to solve the puzzle
     print step
 
     solveKpuzzle handle (k-1)
 
 -- | solve perform sequential solving on 8-puzzle using A* algorithm
-solve :: PSQ PuzzleState Int -> Array U DIM1 Int -> Int -> H.HashMap String Int-> IO Int
-solve psq target n mp = do
+solve :: (PSQ PuzzleState Int,  Array U DIM1 Int, Int, H.HashMap String Int)-> IO Int
+solve (psq, target, n, mp) = do
     let top       = fromJust $ findMin psq
         npsq      = deleteMin psq
         depth     = fn $ key top
@@ -241,18 +238,11 @@ solve psq target n mp = do
     else if curarray == target then
         return depth
     else do
-        -- get neighbors from top
-        -- check if they are in the hashmap
-        -- if so, compare mp[state] = fn and current fn
-        -- if not, push them to psq and hashmap
         let neighborList = getAllNeighbor (key top) n
             validNeighborList = getValidNeighbor neighborList mp
             newmap = addMap validNeighborList mp
             newpsq = addPSQ validNeighborList npsq
-        --print curarray
-        --printList validNeighborList
-        --print $ PQ.size newpsq
-        solve newpsq target n newmap
+        solve (newpsq, target, n, newmap)
 
 
 -- | solve parallel by Paralleilizing the Neighbor State Calculation
@@ -274,3 +264,31 @@ solveParNeighbor psq target n mp = do
             newmap = addMap validNeighborList mp
             newpsq = addPSQ validNeighborList npsq
         solveParNeighbor newpsq target n newmap
+
+-- | solve perform sequential solving on 8-puzzle using A* algorithm
+solveParPSQ psq target n mp k = do
+    let top      = fromJust $ findMin psq
+        npsq     = deleteMin psq
+        depth    = fn $ key top
+        curarray = state $ key top
+
+    -- if PQ.size psq == 0 then
+    if PQ.size psq == 0 then
+        return (-1)
+    else if curarray == target then
+        return depth
+    else if PQ.size psq < k then do
+        let neighborList = getAllNeighbor (key top) n
+            validNeighborList = getValidNeighbor neighborList mp
+            newmap = addMap validNeighborList mp
+            newpsq = addPSQ validNeighborList npsq
+        solveParPSQ newpsq target n newmap k
+    else do
+        let length = PQ.size psq
+            psqs = [PQ.singleton (key x) (prio x) | x <- (PQ.toList psq)]
+            targets = take length (repeat target)
+            ns = take length (repeat n)
+            mps = take length (repeat mp)
+            args = zip4 psqs targets ns mps 
+            result = map solve args `using` parBuffer k rseq
+        return head result
