@@ -289,7 +289,7 @@ solveParPSQ (psq, target, n, mp) = do
         npsq     = deleteMin psq
         depth    = fn $ key top
         curarray = state $ key top
-        k = 4
+        k = 5
 
     -- if PQ.size psq == 0 then
     if PQ.size psq == 0 then

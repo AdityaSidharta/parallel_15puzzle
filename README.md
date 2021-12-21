@@ -77,8 +77,8 @@ stack ghc -- -threaded -rtsopts -eventlog -main-is Sequential app/Sequential.hs
 
 ## Running the experiment
 ```
-./app/ParallelNeighbor "smallinput.txt" +RTS -ls -N4
-./app/ParallelPriorityQueue "smallinput.txt" +RTS -ls -N4
-./app/ParallelPuzzle "smallinput.txt" +RTS -ls -N4
-./app/Sequential "smallinput.txt" +RTS -ls -N4
+./app/ParallelNeighbor "input.txt" +RTS -ls -N5
+./app/ParallelPriorityQueue "input.txt" +RTS -ls -N5
+./app/ParallelPuzzle "input.txt" +RTS -ls -N5
+./app/Sequential "input.txt" +RTS -ls -N5
 ```
