@@ -46,24 +46,45 @@ stack test
 ## Running the Script
 ```
 stack exec 15puzzle-exe "input.txt"
+stack exec sequential-exe "input.txt"
+stack exec parneighbor-exe "input.txt"
+stack exec parpq-exe "input.txt"
+stack exec parpuzzle-exe "input.txt"
 ```
 
 ## Docs Generation
 ```
-stack exec -- haddock --html src/Lib.hs app/Main.hs app/GenFile.hs --hyperlinked-source --odir=docs
+stack exec -- haddock --html app/GenFile.hs app/Main.hs app/ParallelNeighbor.hs app/ParallelPriorityQueue.hs app/ParallelPuzzle.hs app/Sequential.hs src/Lib.hs --hyperlinked-source --odir=docs
 ```
 
 ## Example Generation
+
+100 denote the number of puzzle that should be randomly generated, each with size 3
+
 ```
-stack exec 15puzzle-generate 100 3 "test/test5.txt"
+stack exec 15puzzle-generate 100 3 "input.txt"
 ```
 
 ## Building the main module
 ```
+stack exec ghc-pkg unregister libiserv
 stack ghc -- -threaded -rtsopts -eventlog app/Main.hs
+stack ghc -- -threaded -rtsopts -eventlog -main-is ParallelNeighbor app/ParallelNeighbor.hs
+stack ghc -- -threaded -rtsopts -eventlog -main-is ParallelPriorityQueue app/ParallelPriorityQueue.hs
+stack ghc -- -threaded -rtsopts -eventlog -main-is ParallelPuzzle app/ParallelPuzzle.hs
+stack ghc -- -threaded -rtsopts -eventlog -main-is Sequential app/Sequential.hs
 ```
 
 ## Running the experiment
 ```
-./app/Main "input.txt" +RTS -ls -N8
+./app/ParallelNeighbor "smallinput.txt" +RTS -ls -N4
+./app/ParallelPriorityQueue "smallinput.txt" +RTS -ls -N4
+./app/ParallelPuzzle "smallinput.txt" +RTS -ls -N4
+./app/Sequential "smallinput.txt" +RTS -ls -N4  
 ```
+
+## Running all experiment on our testcase test/test5.txt
+```
+./test.sh
+```
+

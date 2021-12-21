@@ -47,6 +47,10 @@ executable 15puzzle-exe
   main-is: Main.hs
   other-modules:
       GenFile
+      ParallelNeighbor
+      ParallelPriorityQueue
+      ParallelPuzzle
+      Sequential
       Paths_15puzzle
   hs-source-dirs:
       app
@@ -69,10 +73,118 @@ executable 15puzzle-generate
   main-is: GenFile.hs
   other-modules:
       Main
+      ParallelNeighbor
+      ParallelPriorityQueue
+      ParallelPuzzle
+      Sequential
       Paths_15puzzle
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -main-is GenFile
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is GenFile
+  build-depends:
+      15puzzle
+    , PSQueue
+    , base >=4.7 && <5
+    , concurrent-hashtable
+    , parallel
+    , random
+    , random-shuffle
+    , repa
+    , tasty
+    , tasty-hunit
+    , unordered-containers
+  default-language: Haskell2010
+
+executable parneighbor-exe
+  main-is: ParallelNeighbor.hs
+  other-modules:
+      GenFile
+      Main
+      ParallelPriorityQueue
+      ParallelPuzzle
+      Sequential
+      Paths_15puzzle
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is ParallelNeighbor
+  build-depends:
+      15puzzle
+    , PSQueue
+    , base >=4.7 && <5
+    , concurrent-hashtable
+    , parallel
+    , random
+    , random-shuffle
+    , repa
+    , tasty
+    , tasty-hunit
+    , unordered-containers
+  default-language: Haskell2010
+
+executable parpq-exe
+  main-is: ParallelPriorityQueue.hs
+  other-modules:
+      GenFile
+      Main
+      ParallelNeighbor
+      ParallelPuzzle
+      Sequential
+      Paths_15puzzle
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is ParallelPriorityQueue
+  build-depends:
+      15puzzle
+    , PSQueue
+    , base >=4.7 && <5
+    , concurrent-hashtable
+    , parallel
+    , random
+    , random-shuffle
+    , repa
+    , tasty
+    , tasty-hunit
+    , unordered-containers
+  default-language: Haskell2010
+
+executable parpuzzle-exe
+  main-is: ParallelPuzzle.hs
+  other-modules:
+      GenFile
+      Main
+      ParallelNeighbor
+      ParallelPriorityQueue
+      Sequential
+      Paths_15puzzle
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is ParallelPuzzle
+  build-depends:
+      15puzzle
+    , PSQueue
+    , base >=4.7 && <5
+    , concurrent-hashtable
+    , parallel
+    , random
+    , random-shuffle
+    , repa
+    , tasty
+    , tasty-hunit
+    , unordered-containers
+  default-language: Haskell2010
+
+executable sequential-exe
+  main-is: Sequential.hs
+  other-modules:
+      GenFile
+      Main
+      ParallelNeighbor
+      ParallelPriorityQueue
+      ParallelPuzzle
+      Paths_15puzzle
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is Sequential
   build-depends:
       15puzzle
     , PSQueue

@@ -3,45 +3,45 @@
 </span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Lib.html"><span class="hs-identifier">Lib</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Lib.html#readInt"><span class="hs-identifier">readInt</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Lib.html#solveKpuzzle"><span class="hs-identifier">solveKpuzzle</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">System.Exit</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">die</span></span><span class="hs-special">)</span><span>
 </span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">System.Environment</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">getArgs</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">getProgName</span></span><span class="hs-special">)</span><span>
-</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">System.IO</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">readFile</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">openFile</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">IOMode</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ReadMode</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">System.IO</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">openFile</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">IOMode</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ReadMode</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-7"></span><span>
 </span><span id="line-8"></span><span class="annot"><a href="Main.html#main"><span class="hs-identifier hs-type">main</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-9"></span><span id="main"><span class="annot"><span class="annottext">main :: IO ()
 </span><a href="Main.html#main"><span class="hs-identifier hs-var hs-var">main</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-10"></span><span>    </span><span id="local-6989586621679059643"><span class="annot"><span class="annottext">[String]
-</span><a href="#local-6989586621679059643"><span class="hs-identifier hs-var">args</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO [String]
+</span><span id="line-10"></span><span>    </span><span id="local-6989586621679061454"><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679061454"><span class="hs-identifier hs-var">args</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO [String]
 </span><span class="hs-identifier hs-var">getArgs</span></span><span>
 </span><span id="line-11"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[String]
-</span><a href="#local-6989586621679059643"><span class="hs-identifier hs-var">args</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-12"></span><span>        </span><span class="hs-special">[</span><span id="local-6989586621679059642"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679059642"><span class="hs-identifier hs-var">filename</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-13"></span><span>            </span><span id="local-6989586621679059641"><span class="annot"><span class="annottext">Handle
-</span><a href="#local-6989586621679059641"><span class="hs-identifier hs-var">handle</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">String -&gt; IOMode -&gt; IO Handle
+</span><a href="#local-6989586621679061454"><span class="hs-identifier hs-var">args</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-12"></span><span>        </span><span class="hs-special">[</span><span id="local-6989586621679061453"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679061453"><span class="hs-identifier hs-var">filename</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-13"></span><span>            </span><span id="local-6989586621679061452"><span class="annot"><span class="annottext">Handle
+</span><a href="#local-6989586621679061452"><span class="hs-identifier hs-var">handle</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">String -&gt; IOMode -&gt; IO Handle
 </span><span class="hs-identifier hs-var">openFile</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679059642"><span class="hs-identifier hs-var">filename</span></a></span><span> </span><span class="annot"><span class="annottext">IOMode
+</span><a href="#local-6989586621679061453"><span class="hs-identifier hs-var">filename</span></a></span><span> </span><span class="annot"><span class="annottext">IOMode
 </span><span class="hs-identifier hs-var">ReadMode</span></span><span>
-</span><span id="line-14"></span><span>            </span><span id="local-6989586621679059640"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679059640"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Handle -&gt; IO Int
+</span><span id="line-14"></span><span>            </span><span id="local-6989586621679061451"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061451"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Handle -&gt; IO Int
 </span><a href="Lib.html#readInt"><span class="hs-identifier hs-var">readInt</span></a></span><span> </span><span class="annot"><span class="annottext">Handle
-</span><a href="#local-6989586621679059641"><span class="hs-identifier hs-var">handle</span></a></span><span>
+</span><a href="#local-6989586621679061452"><span class="hs-identifier hs-var">handle</span></a></span><span>
 </span><span id="line-15"></span><span>            </span><span class="annot"><span class="annottext">Handle -&gt; Int -&gt; IO ()
 </span><a href="Lib.html#solveKpuzzle"><span class="hs-identifier hs-var">solveKpuzzle</span></a></span><span> </span><span class="annot"><span class="annottext">Handle
-</span><a href="#local-6989586621679059641"><span class="hs-identifier hs-var">handle</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679059640"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><a href="#local-6989586621679061452"><span class="hs-identifier hs-var">handle</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679061451"><span class="hs-identifier hs-var">k</span></a></span><span>
 </span><span id="line-16"></span><span>        </span><span class="annot"><span class="annottext">[String]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-17"></span><span>            </span><span id="local-6989586621679059639"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679059639"><span class="hs-identifier hs-var">pn</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO String
+</span><span id="line-17"></span><span>            </span><span id="local-6989586621679061450"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679061450"><span class="hs-identifier hs-var">pn</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO String
 </span><span class="hs-identifier hs-var">getProgName</span></span><span>
 </span><span id="line-18"></span><span>            </span><span class="annot"><span class="annottext">String -&gt; IO ()
-forall a. HasCallStack =&gt; String -&gt; a
-</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; IO ()) -&gt; String -&gt; IO ()
+forall a. String -&gt; IO a
+</span><span class="hs-identifier hs-var">die</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; IO ()) -&gt; String -&gt; IO ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Usage: &quot;</span></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679059639"><span class="hs-identifier hs-var">pn</span></a></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+</span><a href="#local-6989586621679061450"><span class="hs-identifier hs-var">pn</span></a></span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot; &lt;filename&gt;&quot;</span></span></pre></body></html>
