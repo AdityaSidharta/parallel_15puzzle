@@ -289,7 +289,7 @@ solveParPSQ (psq, target, n, mp) = do
         npsq     = deleteMin psq
         depth    = fn $ key top
         curarray = state $ key top
-        k = 4
+        k = 5
 
     -- if PQ.size psq == 0 then
     if PQ.size psq == 0 then
@@ -307,7 +307,6 @@ solveParPSQ (psq, target, n, mp) = do
         resultV <- newEmptyMVar
         runningV <- newMVar length
         threads <- forM [PQ.singleton (key x) (prio x) | x <- PQ.toList psq] $ \ipsq -> forkIO $ do
-
             if unsafePerformIO(solveBool(ipsq, target, n, mp)) then void (tryPutMVar resultV 1) else (do m <- takeMVar runningV
                                                                                                          if m == 1
                                                                                                                then void (tryPutMVar resultV 0)
