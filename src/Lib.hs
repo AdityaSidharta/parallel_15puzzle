@@ -307,8 +307,8 @@ solveParPSQ (psq, target, n, mp) = do
         resultV <- newEmptyMVar
         runningV <- newMVar length
         threads <- forM [PQ.singleton (key x) (prio x) | x <- PQ.toList psq] $ \ipsq -> forkIO $ do
-            if unsafePerformIO(solveBool(psq, target, n, mp)) then void (tryPutMVar resultV 1) else (do m <- takeMVar runningV
-                                                                                                        if m == 1
+            if unsafePerformIO(solveBool(ipsq, target, n, mp)) then void (tryPutMVar resultV 1) else (do m <- takeMVar runningV
+                                                                                                         if m == 1
                                                                                                                then void (tryPutMVar resultV 0)
                                                                                                                else putMVar runningV (m-1))
         result <- readMVar resultV
