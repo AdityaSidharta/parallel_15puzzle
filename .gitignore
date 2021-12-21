@@ -16,3 +16,4 @@ app/Sequential
 app/Sequential.hi
 app/Sequential.o
 Main.eventlog
+eventlog/*
