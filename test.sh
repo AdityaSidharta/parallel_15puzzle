@@ -2,7 +2,7 @@ for i in 1 2 3 4 5
 do
   for name in "ParallelNeighbor" "ParallelPriorityQueue" "Sequential" "ParallelPuzzle"
   do
-    time ./app/$name input.txt +RTS -ls -N$i
+    time ./app/$name input.txt +RTS -lf -N$i
   done
 if [ ! -d "eventlog/n$i/" ] 
 then

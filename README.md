@@ -75,11 +75,6 @@ stack ghc -- -threaded -rtsopts -eventlog -main-is ParallelPuzzle app/ParallelPu
 stack ghc -- -threaded -rtsopts -eventlog -main-is Sequential app/Sequential.hs
 ```
 
-## Running the experiment
-```
-./app/Sequential "smallinput.txt" +RTS -ls -N4  
-```
-
 ## Running all experiment on our testcase input.txt
 ```
 ./test.sh
