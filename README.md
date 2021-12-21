@@ -80,13 +80,11 @@ stack ghc -- -threaded -rtsopts -eventlog -main-is Sequential app/Sequential.hs
 ./app/Sequential "smallinput.txt" +RTS -ls -N4  
 ```
 
-## Running all experiment on our testcase test/test5.txt
+## Running all experiment on our testcase input.txt
 ```
 ./test.sh
 ```
 
-=======
-./app/Sequential "smallinput.txt" +RTS -ls -N4
 ```
 ./app/ParallelNeighbor "input.txt" +RTS -ls -N5
 ./app/ParallelPriorityQueue "input.txt" +RTS -ls -N5
