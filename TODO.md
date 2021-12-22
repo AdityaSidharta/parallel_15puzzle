@@ -3,7 +3,7 @@
 - [x] Finish the solvability function
 - [x] Testing helper Functions
 - [x] Documentation
-- [ ] Fix PSQ
-- [ ] Parallel algorithm implementation (Naive)
-- [ ] Parallel algorithm implementation (Smart)
-- [ ] Project Report
+- [x] Fix PSQ
+- [x] Parallel algorithm implementation (Naive)
+- [x] Parallel algorithm implementation (Smart)
+- [x] Project Report

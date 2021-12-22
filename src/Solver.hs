@@ -10,7 +10,6 @@ import Data.List ( zip4)
 import Control.Monad ( forM, void )
 import Control.Parallel.Strategies(rpar, using, parList, rseq, parBuffer)
 import Control.Concurrent ( newEmptyMVar, newMVar, forkIO, tryPutMVar, takeMVar, putMVar, readMVar, killThread)
-import GHC.IOArray (IOArray)
 import GHC.IO (unsafePerformIO)
 
 import Puzzle ( PuzzleState, PuzzleState(PuzzleState, gn, fn, state), getZeroPos, swapTwo, getAllNeighbor, getAllNeighborPar, solvability)

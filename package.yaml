@@ -43,6 +43,7 @@ executables:
     - -with-rtsopts=-N
     - -eventlog
     - -Wall
+    - -Werror
     dependencies:
     - 15puzzle
     - PSQueue
@@ -60,6 +61,7 @@ executables:
     - -eventlog
     - -main-is GenFile
     - -Wall
+    - -Werror
     dependencies:
     - 15puzzle
     - random-shuffle
@@ -76,6 +78,7 @@ executables:
     - -eventlog
     - -main-is Sequential
     - -Wall
+    - -Werror
     dependencies:
     - 15puzzle
     - PSQueue
@@ -93,6 +96,7 @@ executables:
     - -eventlog
     - -main-is ParallelNeighbor
     - -Wall
+    - -Werror
     dependencies:
     - 15puzzle
     - PSQueue
@@ -110,6 +114,7 @@ executables:
     - -eventlog
     - -main-is ParallelPriorityQueue
     - -Wall
+    - -Werror
     dependencies:
     - 15puzzle
     - PSQueue
@@ -128,6 +133,7 @@ executables:
     - -eventlog
     - -main-is ParallelPuzzle
     - -Wall
+    - -Werror
     dependencies:
     - 15puzzle
     - PSQueue
@@ -144,6 +150,7 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     - -Wall
+    - -Werror
     dependencies:
     - 15puzzle
     - PSQueue
