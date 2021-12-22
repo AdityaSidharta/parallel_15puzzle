@@ -1,6 +1,7 @@
 module Sequential where
 
-import Lib (readInt, solveKpuzzle)
+import Lib (solveKpuzzle)
+import Parse (readInt)
 import System.Exit(die)
 import System.Environment(getArgs, getProgName)
 import System.IO(openFile, IOMode(ReadMode))

@@ -1,7 +1,7 @@
 module GenFile where
 
 import System.Environment (getProgName, getArgs)
-import Lib (generateArrays, writeArrays)
+import Puzzle (generateArrays, writeArrays)
 
 main :: IO ()
 main = do

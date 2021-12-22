@@ -26,6 +26,9 @@ source-repository head
 library
   exposed-modules:
       Lib
+      Metrics
+      Parse
+      Puzzle
   other-modules:
       Paths_15puzzle
   hs-source-dirs:
@@ -33,7 +36,6 @@ library
   build-depends:
       PSQueue
     , base >=4.7 && <5
-    , concurrent-hashtable
     , parallel
     , random
     , random-shuffle
@@ -54,12 +56,11 @@ executable 15puzzle-exe
       Paths_15puzzle
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -Wall
   build-depends:
       15puzzle
     , PSQueue
     , base >=4.7 && <5
-    , concurrent-hashtable
     , parallel
     , random
     , random-shuffle
@@ -80,12 +81,11 @@ executable 15puzzle-generate
       Paths_15puzzle
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is GenFile
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is GenFile -Wall
   build-depends:
       15puzzle
     , PSQueue
     , base >=4.7 && <5
-    , concurrent-hashtable
     , parallel
     , random
     , random-shuffle
@@ -106,12 +106,11 @@ executable parneighbor-exe
       Paths_15puzzle
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is ParallelNeighbor
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is ParallelNeighbor -Wall
   build-depends:
       15puzzle
     , PSQueue
     , base >=4.7 && <5
-    , concurrent-hashtable
     , parallel
     , random
     , random-shuffle
@@ -132,12 +131,11 @@ executable parpq-exe
       Paths_15puzzle
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is ParallelPriorityQueue
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is ParallelPriorityQueue -Wall
   build-depends:
       15puzzle
     , PSQueue
     , base >=4.7 && <5
-    , concurrent-hashtable
     , parallel
     , random
     , random-shuffle
@@ -158,12 +156,11 @@ executable parpuzzle-exe
       Paths_15puzzle
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is ParallelPuzzle
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is ParallelPuzzle -Wall
   build-depends:
       15puzzle
     , PSQueue
     , base >=4.7 && <5
-    , concurrent-hashtable
     , parallel
     , random
     , random-shuffle
@@ -184,12 +181,11 @@ executable sequential-exe
       Paths_15puzzle
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is Sequential
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is Sequential -Wall
   build-depends:
       15puzzle
     , PSQueue
     , base >=4.7 && <5
-    , concurrent-hashtable
     , parallel
     , random
     , random-shuffle
@@ -206,12 +202,11 @@ test-suite 15puzzle-test
       Paths_15puzzle
   hs-source-dirs:
       test
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall
   build-depends:
       15puzzle
     , PSQueue
     , base >=4.7 && <5
-    , concurrent-hashtable
     , parallel
     , random
     , random-shuffle

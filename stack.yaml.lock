@@ -18,13 +18,6 @@ packages:
       sha256: 2addb474c6f496d26c4335ca4c6a333c746d7f90957d13182c13a1483c6db7e7
   original:
     hackage: repa-3.4.1.4
-- completed:
-    hackage: concurrent-hashtable-0.1.8@sha256:c9ddedc2904e81655e9d50736d3e038239536980833358fc87f576903c120f55,2648
-    pantry-tree:
-      size: 510
-      sha256: 5b51d7f76c644ac72fd942fb63846428362cf64064156aa197f9f2fdcf038100
-  original:
-    hackage: concurrent-hashtable-0.1.8
 snapshots:
 - completed:
     size: 586292

@@ -1,6 +1,7 @@
 module ParallelPuzzle where
 
-import Lib (readInt, parSolveKpuzzle)
+import Lib (parSolveKpuzzle)
+import Parse (readInt)
 import System.Exit(die)
 import System.Environment(getArgs, getProgName)
 import System.IO(openFile, IOMode(ReadMode))

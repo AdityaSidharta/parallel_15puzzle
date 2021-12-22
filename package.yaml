@@ -28,7 +28,6 @@ dependencies:
 - random
 - unordered-containers
 - repa
-- concurrent-hashtable
 - parallel
 
 library:
@@ -43,12 +42,12 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     - -eventlog
+    - -Wall
     dependencies:
     - 15puzzle
     - PSQueue
     - unordered-containers
     - repa
-    - concurrent-hashtable
     - parallel
 
   15puzzle-generate:
@@ -60,6 +59,7 @@ executables:
     - -with-rtsopts=-N
     - -eventlog
     - -main-is GenFile
+    - -Wall
     dependencies:
     - 15puzzle
     - random-shuffle
@@ -75,12 +75,12 @@ executables:
     - -with-rtsopts=-N
     - -eventlog
     - -main-is Sequential
+    - -Wall
     dependencies:
     - 15puzzle
     - PSQueue
     - unordered-containers
     - repa
-    - concurrent-hashtable
     - parallel
 
   parneighbor-exe:
@@ -92,12 +92,12 @@ executables:
     - -with-rtsopts=-N
     - -eventlog
     - -main-is ParallelNeighbor
+    - -Wall
     dependencies:
     - 15puzzle
     - PSQueue
     - unordered-containers
     - repa
-    - concurrent-hashtable
     - parallel
 
   parpq-exe:
@@ -109,12 +109,12 @@ executables:
     - -with-rtsopts=-N
     - -eventlog
     - -main-is ParallelPriorityQueue
+    - -Wall
     dependencies:
     - 15puzzle
     - PSQueue
     - unordered-containers
     - repa
-    - concurrent-hashtable
     - parallel
 
 
@@ -127,12 +127,12 @@ executables:
     - -with-rtsopts=-N
     - -eventlog
     - -main-is ParallelPuzzle
+    - -Wall
     dependencies:
     - 15puzzle
     - PSQueue
     - unordered-containers
     - repa
-    - concurrent-hashtable
     - parallel
 
 tests:
@@ -143,6 +143,7 @@ tests:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -Wall
     dependencies:
     - 15puzzle
     - PSQueue
@@ -152,5 +153,4 @@ tests:
     - random
     - unordered-containers
     - repa
-    - concurrent-hashtable
     - parallel

@@ -1,6 +1,7 @@
 module ParallelPriorityQueue where
 
-import Lib (readInt, parPSQSolvePuzzle)
+import Lib (parPSQSolvePuzzle)
+import Parse (readInt)
 import System.Exit(die)
 import System.Environment(getArgs, getProgName)
 import System.IO(openFile, IOMode(ReadMode))
