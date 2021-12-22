@@ -1,6 +1,6 @@
 module ParallelNeighbor where
 
-import Lib (parNeighborSolveKpuzzle)
+import Solver (parNeighborSolveKpuzzle)
 import Parse (readInt)
 import System.Exit(die)
 import System.Environment(getArgs, getProgName)

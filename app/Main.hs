@@ -1,6 +1,6 @@
 module Main where
 
-import Lib (solveKpuzzle)
+import Solver (solveKpuzzle)
 import Parse (readInt)
 import System.Exit(die)
 import System.Environment(getArgs, getProgName)

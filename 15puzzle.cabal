@@ -25,10 +25,10 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
       Metrics
       Parse
       Puzzle
+      Solver
   other-modules:
       Paths_15puzzle
   hs-source-dirs:

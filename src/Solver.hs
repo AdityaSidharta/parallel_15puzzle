@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Lib where
+module Solver where
 import System.IO (hGetLine, Handle)
 import Data.PSQueue as PQ (PSQ, singleton, prio, size, findMin, deleteMin, key, insert, toList)
 import Data.Maybe ( fromJust, catMaybes )
