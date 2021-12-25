@@ -1,8 +1,8 @@
 # parallel_fifteen_puzzle
 
-![https://img.shields.io/badge/Documentation-Haddock-brightgreen](https://adityasidharta.com/parallel_15puzzle/)
-
 Parallel Functional Programming Fall 2021 Project – Parallel Fifteen Puzzle
+
+[![Documentation](https://img.shields.io/badge/Documentation-Haddock-brightgreen)](https://adityasidharta.com/parallel_15puzzle/)
 
 ## Problem Formulation
 15 Puzzle is a sliding puzzle, which consists of (N ×N ) square tiles, where each squared
