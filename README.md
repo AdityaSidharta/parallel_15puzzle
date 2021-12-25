@@ -1,4 +1,7 @@
 # parallel_fifteen_puzzle
+
+![https://img.shields.io/badge/Documentation-Haddock-brightgreen](https://adityasidharta.com/parallel_15puzzle/)
+
 Parallel Functional Programming Fall 2021 Project – Parallel Fifteen Puzzle
 
 ## Problem Formulation
